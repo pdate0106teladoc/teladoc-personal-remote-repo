@@ -1,0 +1,532 @@
+.hierarchy-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: calc(100vh - 230px);
+  font-size: $font-size-xs;
+
+  button {
+    font: inherit;
+  }
+
+  .hierarchy-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    p {
+      margin: 0;
+      color: $primary-black;
+    }
+  }
+
+  .hierarchy-progress {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: $neutral-stroke;
+    white-space: nowrap;
+  }
+
+  .hierarchy-reset {
+    padding: 5px 10px;
+    border: 1px solid $neutral-strole-1;
+    border-radius: 4px;
+    background: $color-white;
+    color: $primary-black;
+
+    &:not(:disabled) {
+      cursor: pointer;
+    }
+
+    &:disabled {
+      opacity: 0.45;
+    }
+  }
+
+  .hierarchy-workspace {
+    display: grid;
+    grid-template-columns: 235px minmax(0, 1fr);
+    min-height: calc(100vh - 250px);
+  }
+
+  .hierarchy-source {
+    min-width: 0;
+    padding: 10px 10px 0;
+    background: $grey-94;
+    
+
+    // While a drag is in flight the picked rows travel with the cursor, so the
+    // list steps back.
+    &.dragging {
+      .hierarchy-select-row,
+      .hierarchy-entity-list {
+        opacity: 0.45;
+      }
+    }
+  }
+
+  .hierarchy-drag-preview {
+    position: fixed;
+    top: -1000px;
+    left: -1000px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid $link-color;
+    border-radius: 4px;
+    background: $color-white;
+    box-shadow: 0 2px 8px $border-shadow-color;
+    color: $primary-black;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semi-bold;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .hierarchy-tabs {
+    display: flex;
+    gap: 16px;
+    border-bottom: 1px solid $table-bordercolor;
+
+    button {
+      min-width: 0;
+      width: auto;
+      padding: 6px 2px 8px;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      background: transparent;
+      color: $neutral-stroke;
+      cursor: pointer;
+
+      &.active {
+        border-bottom-color: $link-color;
+        color: $primary-black;
+        font-weight: $font-weight-semi-bold;
+      }
+    }
+  }
+
+  .hierarchy-select-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding: 0 8px;
+
+    .hierarchy-select-all {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      .form-check {
+        padding-left: 0;
+      }
+    }
+
+    label {
+      color: $neutral-stroke;
+      cursor: pointer;
+    }
+
+    .hierarchy-clear {
+      min-width: 0;
+      width: auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: $link-color;
+      cursor: pointer;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+    }
+  }
+
+  // The shared checkbox wraps a Bootstrap form-check, which reserves label room
+  // on the left; these rows label separately, so reclaim that space.
+  .custom-checkbox-wrapper .form-check {
+    display: flex;
+    align-items: center;
+    min-height: 0;
+    margin: 0;
+    padding-left: 0;
+  }
+
+  input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    float: none;
+    margin: 0;
+    accent-color: $link-color;
+    cursor: pointer;
+  }
+
+  .hierarchy-entity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: calc(100vh - 390px);
+    overflow-y: auto;
+    padding: 0 2px 12px;
+    margin-top: 10px;
+  }
+
+  .hierarchy-source-empty {
+    margin: 24px 8px;
+    text-align: center;
+    color: $neutral-foreground;
+  }
+
+  .hierarchy-entity-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 6px 8px;
+    border: 1px solid $table-bordercolor;
+    border-radius: 4px;
+    background: $color-white;
+    cursor: grab;
+    transition: border-color 120ms ease;
+
+    &:active {
+      cursor: grabbing;
+    }
+
+    // Selection reads through the border and checkbox only; the card stays white.
+    &.selected {
+      border-color: $link-color;
+    }
+
+    // Placed rows swap the checkbox for a green tick and name their new parent.
+    &.placed {
+      .hierarchy-entity-copy small {
+        color: $success-text-color;
+      }
+    }
+    .form-check {
+      padding-left: 0;
+    }
+  }
+
+  .hierarchy-entity-icon,
+  .hierarchy-parent-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: $grey-94;
+    color: $neutral-stroke;
+
+    // The shared icons ship a fixed fill, so fade them to the muted design tone.
+    svg {
+      opacity: 0.4;
+    }
+
+    .hierarchy-entity-check {
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: $color-white;
+      color: $success-text-color;
+      opacity: 1;
+    }
+  }
+
+  .hierarchy-entity-copy {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+
+    strong,
+    small {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    strong {
+      color: $primary-black;
+      font-size: $font-size-xs;
+      font-weight: $font-weight-regular;
+    }
+
+    small {
+      color: $neutral-foreground;
+      font-size: $font-size-xxs;
+    }
+  }
+
+  .hierarchy-unplace {
+    display: inline-flex;
+    min-width: 0;
+    width: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: $neutral-stroke;
+    cursor: pointer;
+  }
+
+  .hierarchy-grip {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: $neutral-strole-1;
+  }
+
+  .hierarchy-destination {
+    min-width: 0;
+    padding: 10px 14px;
+    background: $color-white;
+  }
+
+  .hierarchy-search-field {
+    position: relative;
+
+    .search-bar-wrapper,
+    .search-input-container,
+    .hierarchy-search {
+      width: 100%;
+    }
+
+    .search-input-container.md {
+      height: 30px;
+    }
+  }
+
+  .hierarchy-suggestions {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    max-height: 260px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 4px 0;
+    list-style: none;
+    background: $color-white;
+    border: 1px solid $neutral-strole-1;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px $border-shadow-color;
+  }
+
+  .hierarchy-suggestion-empty {
+    padding: 10px 12px;
+    color: $neutral-foreground;
+  }
+
+  .hierarchy-suggestion {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    color: $primary-black;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-regular;
+    cursor: pointer;
+
+    strong {
+      font-weight: $font-weight-semi-bold;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: $neutral-background-hover;
+    }
+
+    &.selected {
+      background: rgba($link-color, 0.08);
+    }
+  }
+
+  .hierarchy-drop-hint {
+    margin: 10px 0 0;
+    padding-left: 34px;
+    color: $neutral-foreground;
+  }
+
+  .hierarchy-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 370px);
+    text-align: center;
+
+    .hierarchy-empty-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+      margin-bottom: 26px;
+      border-radius: 50%;
+      background: $grey-94;
+      color: $primary-black;
+
+      svg {
+        width: 34px;
+        height: 34px;
+      }
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      color: $primary-black;
+      font-size: $font-size-2rem;
+      font-weight: $font-weight-semi-bold;
+    }
+
+    p {
+      margin: 0;
+      color: $neutral-stroke;
+      font-size: $font-size-small;
+    }
+  }
+
+  .hierarchy-tree {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 335px);
+    overflow-y: auto;
+    padding: 12px 0;
+  }
+
+  .hierarchy-tree-branch {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hierarchy-tree-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+    padding-right: 8px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition:
+      border-color 120ms ease,
+      background-color 120ms ease;
+
+    &.drag-over {
+      border-color: $link-color;
+      background: rgba($link-color, 0.08);
+    }
+
+    // Rows dropped in this session read as cards and stay draggable so they can
+    // be re-parented or take children of their own.
+    &.placed {
+      min-height: 34px;
+      margin-bottom: 4px;
+      background: $table-header-color;
+      border-color: $table-bordercolor;
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
+
+      .hierarchy-tree-label {
+        color: $primary-black;
+        font-weight: $font-weight-medium;
+      }
+
+      .hierarchy-unplace {
+        margin-left: auto;
+        opacity: 0;
+      }
+
+      &:hover .hierarchy-unplace,
+      .hierarchy-unplace:focus-visible {
+        opacity: 1;
+      }
+    }
+  }
+
+  .hierarchy-tree-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    min-width: 20px;
+    width: 20px;
+    height: 20px;
+    // The shared Button ships 12px side padding, which would squeeze the chevron
+    // out of a box this narrow.
+    padding: 0;
+    border: 1px solid $neutral-strole-1;
+    border-radius: 4px;
+    background: $color-white;
+    color: $primary-black;
+    cursor: pointer;
+
+    svg {
+      flex-shrink: 0;
+      width: 11px;
+      height: 11px;
+    }
+
+    &:hover {
+      border-color: $link-color;
+      color: $link-color;
+    }
+  }
+
+  .hierarchy-tree-toggle-spacer {
+    flex-shrink: 0;
+    width: 20px;
+  }
+
+  .hierarchy-tree-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    color: $neutral-stroke;
+
+    svg {
+      width: 13px;
+      height: 13px;
+    }
+  }
+
+  .hierarchy-tree-label {
+    overflow: hidden;
+    color: $primary-black;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: $font-size-small;
+  }
+
+  @media (max-width: 760px) {
+    .hierarchy-toolbar {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .hierarchy-workspace {
+      grid-template-columns: 1fr;
+    }
+
+    .hierarchy-source {
+      border-right: 0;
+      border-bottom: 1px solid $grey-94;
+    }
+  }
+}

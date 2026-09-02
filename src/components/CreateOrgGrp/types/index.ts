@@ -38,6 +38,21 @@ export type CreateOrgGrpBasicInfo = {
     groupRecords: ManualEntityRecord[];
 };
 
+export type HierarchyEntityType = "org" | "group";
+
+export type HierarchyPlacement = {
+    entityId: string;
+    entityType: HierarchyEntityType;
+    parentId: string;
+    parentName: string;
+};
+
+export type CreateOrgGrpHierarchy = {
+    parentQuery: string;
+    selectedParentId: string;
+    placements: HierarchyPlacement[];
+};
+
 export type ManualEntityRecord = {
     id: string;
     opportunityGuids: string[];

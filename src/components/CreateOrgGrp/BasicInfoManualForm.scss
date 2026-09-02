@@ -17,6 +17,8 @@ $manual-control-height: 30px;
         border-bottom: 1px solid $table-bordercolor;
 
         .manual-tab {
+            min-width: 0;
+            width: auto;
             border: none;
             background: transparent;
             padding: 6px 2px 8px;
@@ -49,17 +51,22 @@ $manual-control-height: 30px;
 
         .manual-count-input {
             width: 85px;
-            height: $manual-control-height;
-            padding: 0 8px;
-            border: 1px solid $neutral-strole-1;
-            border-radius: 4px;
-            background: $color-white;
-            font-size: $font-size-xs;
-            color: $primary-black;
+            margin-bottom: 0;
 
-            &:focus {
-                outline: none;
-                border-color: $link-color;
+            .custom-input-field {
+                width: 85px;
+                height: $manual-control-height;
+                padding: 0 8px;
+                border: 1px solid $neutral-strole-1;
+                border-radius: 4px;
+                background: $color-white;
+                font-size: $font-size-xs;
+                color: $primary-black;
+
+                &:focus {
+                    outline: none;
+                    border-color: $link-color;
+                }
             }
         }
 
@@ -151,7 +158,12 @@ $manual-control-height: 30px;
             .manual-apply-all {
                 display: inline-flex;
                 align-items: center;
+                min-width: 0;
+                width: auto;
                 height: $manual-control-height;
+                padding: 0;
+                border: 0;
+                background: transparent;
                 line-height: $manual-control-height;
                 font-size: $font-size-xs;
                 color: $link-color;
@@ -194,6 +206,8 @@ $manual-control-height: 30px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            min-width: 0;
+            width: auto;
             height: $manual-control-height;
             border: none;
             background: transparent;
@@ -273,6 +287,8 @@ $manual-control-height: 30px;
             .opp-select-chip-remove {
                 display: inline-flex;
                 align-items: center;
+                min-width: 0;
+                width: auto;
                 border: none;
                 background: transparent;
                 padding: 0;
@@ -318,13 +334,22 @@ $manual-control-height: 30px;
                 gap: 8px;
                 width: 100%;
                 margin: 0;
-                padding: 6px 10px;
+                padding: 8px;
                 font-size: $font-size-xs;
                 color: $primary-black;
                 cursor: pointer;
 
+                .custom-checkbox-wrapper.form-check {
+                    display: flex;
+                    align-items: center;
+                    min-height: 0;
+                    margin: 0;
+                    padding-left: 0;
+                }
+
                 input[type="checkbox"] {
                     flex-shrink: 0;
+                    float: none;
                     margin: 0;
                     accent-color: $link-color;
                     cursor: pointer;

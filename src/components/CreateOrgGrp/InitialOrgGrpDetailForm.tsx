@@ -2,14 +2,14 @@ import { TOOLTIP_MESSAGES } from "@/constants";
 import {
   Button,
   CheckboxGroup,
+  CloseIcon,
   CustomInput,
   CustomRadioToggle,
   DatePicker,
   DropdownWithIcon,
 } from "@ucc/common-ui";
 import { useState } from "react";
-import { Button as BootstrapButton, Offcanvas } from "react-bootstrap";
-import { BsX } from "react-icons/bs";
+import { Offcanvas } from "react-bootstrap";
 import { isValidURL } from "@/utils";
 import useCreateOrgGrpStore from "@/store/useCreateOrgGrpStore";
 import FileUpload from "../FileUpload/FileUpload";
@@ -108,14 +108,14 @@ const InitialOrgGrpDetailForm: React.FC<InitialOrgGrpDetailFormProps> = ({
         <Offcanvas.Title>
           <span className="side-modal-title">Create new org/group</span>
         </Offcanvas.Title>
-        <BootstrapButton
-          variant="link"
+        <Button
+          variant="secondary"
           onClick={onCancel}
-          className="p-0 ms-2"
+          className="initial-close-button"
           aria-label="Close"
         >
-          <BsX size={24} />
-        </BootstrapButton>
+          <CloseIcon width={24} height={24} />
+        </Button>
       </Offcanvas.Header>
       <Offcanvas.Body>
         <div className="initial-org-grp-form">
@@ -190,12 +190,10 @@ const InitialOrgGrpDetailForm: React.FC<InitialOrgGrpDetailFormProps> = ({
               onBlur={(e) => setWorkfrontLinkError(isMalformedLink(e.target.value))}
               placeholder=" "
               className="input-style"
+              error={
+                workfrontLinkError ? "Please enter a valid URL" : undefined
+              }
             />
-            {workfrontLinkError && (
-              <span className="error-message">
-                Please enter a valid URL
-              </span>
-            )}
           </div>
 
           <div>
@@ -209,12 +207,10 @@ const InitialOrgGrpDetailForm: React.FC<InitialOrgGrpDetailFormProps> = ({
               onBlur={(e) => setPlaybookLinkError(isMalformedLink(e.target.value))}
               placeholder=" "
               className="input-style"
+              error={
+                playbookLinkError ? "Please enter a valid URL" : undefined
+              }
             />
-            {playbookLinkError && (
-              <span className="error-message">
-                Please enter a valid URL
-              </span>
-            )}
           </div>
 
           <CheckboxGroup

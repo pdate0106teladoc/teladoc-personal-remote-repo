@@ -3,6 +3,7 @@ import {
   CreateOrgGrpBasicInfo,
   CreateOrgGrpDetails,
   CreateOrgGrpEntity,
+  CreateOrgGrpHierarchy,
   CreateOrgGrpOpportunityStep,
 } from "@/components/CreateOrgGrp/types";
 
@@ -10,11 +11,13 @@ export type CreateOrgGrpState = {
   details: CreateOrgGrpDetails;
   opportunity: CreateOrgGrpOpportunityStep;
   basicInfo: CreateOrgGrpBasicInfo;
+  hierarchy: CreateOrgGrpHierarchy;
   orgs: CreateOrgGrpEntity[];
   groups: CreateOrgGrpEntity[];
   setDetails: (details: Partial<CreateOrgGrpDetails>) => void;
   setOpportunity: (opportunity: Partial<CreateOrgGrpOpportunityStep>) => void;
   setBasicInfo: (basicInfo: Partial<CreateOrgGrpBasicInfo>) => void;
+  setHierarchy: (hierarchy: Partial<CreateOrgGrpHierarchy>) => void;
   setOrgs: (orgs: CreateOrgGrpEntity[]) => void;
   setGroups: (groups: CreateOrgGrpEntity[]) => void;
   reset: () => void;
@@ -44,10 +47,17 @@ export const emptyCreateOrgGrpBasicInfo: CreateOrgGrpBasicInfo = {
   groupRecords: [],
 };
 
+export const emptyCreateOrgGrpHierarchy: CreateOrgGrpHierarchy = {
+  parentQuery: "",
+  selectedParentId: "",
+  placements: [],
+};
+
 const initialState = {
   details: { ...emptyCreateOrgGrpDetails },
   opportunity: { ...emptyCreateOrgGrpOpportunity },
   basicInfo: { ...emptyCreateOrgGrpBasicInfo },
+  hierarchy: { ...emptyCreateOrgGrpHierarchy },
   orgs: [] as CreateOrgGrpEntity[],
   groups: [] as CreateOrgGrpEntity[],
 };
@@ -70,6 +80,11 @@ const useCreateOrgGrpStore = create<CreateOrgGrpState>((set) => ({
       basicInfo: { ...state.basicInfo, ...basicInfo },
     })),
 
+  setHierarchy: (hierarchy) =>
+    set((state) => ({
+      hierarchy: { ...state.hierarchy, ...hierarchy },
+    })),
+
   setOrgs: (orgs) => set({ orgs }),
   setGroups: (groups) => set({ groups }),
 
@@ -78,6 +93,7 @@ const useCreateOrgGrpStore = create<CreateOrgGrpState>((set) => ({
       details: { ...emptyCreateOrgGrpDetails },
       opportunity: { ...emptyCreateOrgGrpOpportunity },
       basicInfo: { ...emptyCreateOrgGrpBasicInfo },
+      hierarchy: { ...emptyCreateOrgGrpHierarchy },
       orgs: [],
       groups: [],
     }),

@@ -1,6 +1,13 @@
-import { CustomInput, CustomRadioGroup, DatePicker } from "@ucc/common-ui";
+import {
+    Button,
+    CloseIcon,
+    CustomCheckbox,
+    CustomInput,
+    CustomRadioGroup,
+    DatePicker,
+} from "@ucc/common-ui";
 import { useEffect, useRef, useState } from "react";
-import { BsChevronDown, BsX } from "react-icons/bs";
+import { BsChevronDown } from "react-icons/bs";
 import { DustbinIcon } from "@/assets";
 import useCreateOrgGrpStore from "@/store/useCreateOrgGrpStore";
 import { ManualEntityRecord } from "./types";
@@ -36,12 +43,14 @@ const resizeRecords = (
 };
 
 interface OpportunitySelectProps {
+    idPrefix: string;
     options: OpportunityOption[];
     values: string[];
     onChange: (values: string[]) => void;
 }
 
 const OpportunitySelect: React.FC<OpportunitySelectProps> = ({
+    idPrefix,
     options,
     values,
     onChange,
@@ -85,8 +94,8 @@ const OpportunitySelect: React.FC<OpportunitySelectProps> = ({
                         {selected.map((option) => (
                             <span className="opp-select-chip" key={option.value}>
                                 <span className="opp-select-chip-text">{option.label}</span>
-                                <button
-                                    type="button"
+                                <Button
+                                    variant="secondary"
                                     className="opp-select-chip-remove"
                                     aria-label={`Remove ${option.label}`}
                                     onClick={(e) => {
@@ -94,8 +103,8 @@ const OpportunitySelect: React.FC<OpportunitySelectProps> = ({
                                         toggleOption(option.value);
                                     }}
                                 >
-                                    <BsX />
-                                </button>
+                                    <CloseIcon />
+                                </Button>
                             </span>
                         ))}
                     </span>
@@ -112,18 +121,21 @@ const OpportunitySelect: React.FC<OpportunitySelectProps> = ({
                     )}
                     {options.map((option) => {
                         const checked = values.includes(option.value);
+                        const checkboxId = `${idPrefix}-${option.value}`;
                         return (
                             <li key={option.value}>
-                                <label
+                                <div
                                     className={`opp-select-option${checked ? " selected" : ""}`}
                                 >
-                                    <input
-                                        type="checkbox"
+                                    <CustomCheckbox
+                                        id={checkboxId}
                                         checked={checked}
                                         onChange={() => toggleOption(option.value)}
                                     />
-                                    {option.label}
-                                </label>
+                                    <label htmlFor={checkboxId}>
+                                        {option.label}
+                                    </label>
+                                </div>
                             </li>
                         );
                     })}
@@ -202,22 +214,22 @@ export const BasicInfoManualForm: React.FC = () => {
         <div className="basic-info-manual">
             <div className="manual-tabs">
                 {showOrgs && (
-                    <button
-                        type="button"
+                    <Button
+                        variant="secondary"
                         className={`manual-tab${isOrgTab ? " active" : ""}`}
                         onClick={() => setActiveTab("orgs")}
                     >
                         Enter orgs manually
-                    </button>
+                    </Button>
                 )}
                 {showGroups && (
-                    <button
-                        type="button"
+                    <Button
+                        variant="secondary"
                         className={`manual-tab${!isOrgTab ? " active" : ""}`}
                         onClick={() => setActiveTab("groups")}
                     >
                         Enter groups manually
-                    </button>
+                    </Button>
                 )}
             </div>
 
@@ -226,7 +238,7 @@ export const BasicInfoManualForm: React.FC = () => {
                     How many {entityLabel}s are you creating?
                     <span className="required">*</span>
                 </label>
-                <input
+                <CustomInput
                     id="manual-count"
                     type="number"
                     min={MIN_RECORDS}
@@ -251,6 +263,7 @@ export const BasicInfoManualForm: React.FC = () => {
                                 </span>
                                 <div className="manual-field-control">
                                     <OpportunitySelect
+                                        idPrefix={`manual-opp-${record.id}`}
                                         options={opportunityOptions}
                                         values={record.opportunityGuids}
                                         onChange={(opportunityGuids) =>
@@ -316,34 +329,27 @@ export const BasicInfoManualForm: React.FC = () => {
                                         />
                                     </div>
                                     {index === 0 && record.startDate && records.length > 1 && (
-                                        <span
+                                        <Button
+                                            variant="secondary"
                                             className="manual-apply-all"
-                                            role="button"
-                                            tabIndex={0}
                                             onClick={() => applyStartDateToAll(record.startDate)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === "Enter" || e.key === " ") {
-                                                    e.preventDefault();
-                                                    applyStartDateToAll(record.startDate);
-                                                }
-                                            }}
                                         >
                                             Apply to all
-                                        </span>
+                                        </Button>
                                     )}
                                 </div>
                             </div>
                         </div>
 
                         {records.length > 1 && (
-                            <button
-                                type="button"
+                            <Button
+                                variant="secondary"
                                 className="manual-record-remove"
                                 aria-label={`Remove ${entityLabel}`}
                                 onClick={() => removeRecord(index)}
                             >
                                 <DustbinIcon />
-                            </button>
+                            </Button>
                         )}
                     </div>
                 ))}
