@@ -1,0 +1,172 @@
+.confirmation-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    // Header info: label + value on one row (matches sidebar overview design)
+    .confirm-info-list {
+        width: 100%;
+    }
+
+    .confirm-info-row {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 10px 0;
+    }
+
+    .confirm-info-label {
+        font-weight: $font-weight-semi-bold;
+        font-size: $font-size-xs;
+        color: $btn-back-color;
+        line-height: 1.4;
+    }
+
+    .confirm-info-value {
+        font-weight: $font-weight-regular;
+        font-size: $font-size-small;
+        color: $primary-black;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    .confirm-priority {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .confirm-priority-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: $priority-normal-dot;
+        flex-shrink: 0;
+    }
+
+    .confirm-opportunity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .confirm-link {
+        color: $color-purple;
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .confirm-file {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        .confirm-file-name {
+            font-weight: $font-weight-semi-bold;
+            color: $primary-black;
+        }
+
+        .confirm-file-size {
+            font-weight: $font-weight-regular;
+            font-size: $font-size-xs;
+            color: $neutral-stroke;
+        }
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    // Entity (org / group) cards
+    .entity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .entity-card {
+        border-radius: 8px;
+        background: $grey-94;
+        overflow: hidden;
+    }
+
+    .entity-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+
+        .entity-card-title {
+            font-weight: $font-weight-semi-bold;
+            font-size: $font-size-small;
+            color: $primary-black;
+        }
+    }
+
+    .entity-card-body {
+        display: flex;
+        flex-direction: column;
+        padding: 0 16px 12px;
+    }
+
+    .entity-row {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        align-items: start;
+        gap: 8px 24px;
+        padding: 8px 0;
+
+        &--split {
+            grid-template-columns: 150px 1fr 120px 1fr;
+        }
+    }
+
+    .entity-row-label {
+        font-weight: $font-weight-regular;
+        font-size: $font-size-xs;
+        color: $neutral-stroke;
+        line-height: 1.4;
+    }
+
+    .entity-row-value {
+        font-weight: $font-weight-regular;
+        font-size: $font-size-small;
+        color: $primary-black;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    .entity-account-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .entity-account-main {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .entity-account-name {
+            font-size: $font-size-small;
+            color: $primary-black;
+        }
+    }
+
+    .entity-account-pending {
+        font-weight: $font-weight-semi-bold;
+        font-size: $font-size-xs;
+        color: $priority-normal-dot;
+    }
+}

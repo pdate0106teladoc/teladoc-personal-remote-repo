@@ -1,0 +1,181 @@
+.opp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .opp-form-search-comp {
+        gap: 8px;
+
+        .search-bar-wrapper {
+            height: 24px;
+        }
+
+        .custom-button {
+            min-width: fit-content;
+        }
+    }
+
+    .opp-form-results {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .opp-card {
+        display: flex;
+        gap: 12px;
+        padding: 16px;
+        border-bottom: 1px solid #e6e6ea;
+
+        &.selected {
+            background: #f7f5ff;
+        }
+
+        .opp-card-select {
+            padding-top: 2px;
+        }
+
+        .opp-card-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .opp-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .opp-card-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            color: #1a1a24;
+
+            .opp-card-link {
+                display: inline-flex;
+                color: #6b6b76;
+                cursor: pointer;
+
+                &:hover {
+                    color: #4a3aff;
+                }
+            }
+        }
+
+        .opp-card-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .opp-card-detail-row {
+            display: flex;
+            font-size: 13px;
+            line-height: 18px;
+
+            .opp-card-detail-label {
+                width: 200px;
+                flex-shrink: 0;
+                color: #6b6b76;
+            }
+
+            .opp-card-detail-value {
+                color: #1a1a24;
+            }
+        }
+    }
+
+    .opp-form-footer-wrap {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        flex-shrink: 0;
+        display: flex;
+        background-color: $color-white;
+        padding: 16px 20px;
+        margin: 20px 0px 70px 0px;
+
+        .opp-form-footer {
+            width: stretch;
+            flex-direction: column;
+            justify-content: space-between;
+            border-top: 1px solid $grey-94;
+            padding: 2rem;
+            background-color: $color-white;
+            background: #f4f4f6;
+            border-radius: 8px;
+
+            .opp-footer-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                justify-content: space-between;
+
+                .opp-footer-title {
+                    font-weight: 600;
+                    font-size: 14px;
+                    color: #1a1a24;
+                }
+
+                .clear-btn {
+                    font-weight: 400;
+                    font-size: 14px;
+                    color: $link-color;
+                    cursor: pointer;
+                }
+            }
+
+            .opp-footer-empty {
+                margin: 12px 0 0;
+                text-align: center;
+                font-size: 13px;
+                color: #6b6b76;
+            }
+
+            .opp-footer-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 12px;
+                max-height: 60px;
+                overflow-y: auto;
+                scrollbar-width: none;
+
+                .opp-footer-chip {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    background: #fff;
+                    border: 1px solid #e6e6ea;
+                    border-radius: 16px;
+                    padding: 4px 12px;
+                    font-size: 13px;
+                    color: #1a1a24;
+
+                    .opp-footer-chip-remove {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        border: none;
+                        background: transparent;
+                        padding: 0;
+                        font-size: 16px;
+                        line-height: 1;
+                        color: #6b6b76;
+                        cursor: pointer;
+
+                        &:hover {
+                            color: #1a1a24;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}

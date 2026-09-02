@@ -1,0 +1,56 @@
+.create-org-grp-wizard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 10px 80px 10px;
+
+  .wizard-breadcrumb {
+    .breadcrumb {
+      margin-bottom: 0;
+    }
+
+    .breadcrumb-item {
+      font-size: $font-size-16;
+      font-weight: $font-weight-regular;
+      color: $primary-black;
+
+      a {
+        font-size: $font-size-16;
+        font-weight: $font-weight-regular;
+      }
+
+      &.active {
+        font-weight: $font-weight-semi-bold;
+      }
+    }
+  }
+
+  .wizard-content {
+    .wizard-step-title {
+      font-size: $font-size-small;
+      font-weight: $font-weight-semi-bold;
+      color: $primary-black;
+    }
+  }
+
+  .footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem;
+    background-color: $color-white;
+    border-top: 1px solid $grey-94;
+
+    &.no-top-border {
+      border-top: none;
+    }
+
+    button {
+      width: revert;
+    }
+  }
+}

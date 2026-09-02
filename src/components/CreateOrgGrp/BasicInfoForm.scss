@@ -1,0 +1,68 @@
+.basic-info-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .basic-info-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+
+        .basic-info-instruction {
+            font-size: $font-size-small;
+            color: $primary-black;
+        }
+
+        .download-template-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-width: fit-content;
+
+            svg {
+                width: 16px;
+                height: 16px;
+            }
+        }
+    }
+
+    .basic-info-upload {
+        display: flex;
+        flex-direction: column;
+        background: $grey-94;
+        border-radius: 8px;
+        padding: 16px;
+
+        .basic-info-upload-hint {
+            font-size: $font-size-xs;
+            color: $neutral-foreground;
+            margin-bottom: 12px;
+        }
+
+        .basic-info-dropzone {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 360px;
+            border: 1px dashed $neutral-strole-1;
+            border-radius: 8px;
+            background: $color-white;
+
+            .basic-info-dropzone-text {
+                margin: 0;
+                font-size: $font-size-xs;
+                color: $neutral-foreground;
+
+                .basic-info-choose-link {
+                    color: $link-color;
+                    cursor: pointer;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+    }
+}
