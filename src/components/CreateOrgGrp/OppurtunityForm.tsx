@@ -1,5 +1,4 @@
-import { Button, CustomCheckbox, FailSafePage, RoundedLabel, SearchBar, SearchIcon, SuccessIcon } from "@ucc/common-ui";
-import { BsCheckCircle } from "react-icons/bs";
+import { Button, CheckMarkCircle, CustomCheckbox, FailSafePage, RoundedLabel, SearchBar, SearchIcon, SuccessIcon } from "@ucc/common-ui";
 import "./OppurtunityForm.scss";
 import { Opportunities, Opportunity } from "./types";
 import useCreateOrgGrpStore from "@/store/useCreateOrgGrpStore";
@@ -213,7 +212,7 @@ export const OppurtunityForm: React.FC = () => {
                             {hasSelection ? (
                                 <SuccessIcon />
                             ) : (
-                                <BsCheckCircle className="opp-footer-icon-empty" />
+                                <CheckMarkCircle className="opp-footer-icon-empty" />
                             )}
                             <span className="opp-footer-title">Selected opportunities ({selectedOpportunities.length})</span>
                         </div>
@@ -239,14 +238,14 @@ export const OppurtunityForm: React.FC = () => {
                                 return (
                                     <span className="opp-footer-chip" key={key}>
                                         {opp.title}
-                                        <button
-                                            type="button"
+                                        <Button
+                                            variant="secondary"
                                             className="opp-footer-chip-remove"
                                             aria-label={`Remove ${opp.title}`}
                                             onClick={() => toggleSelection(key, false)}
                                         >
                                             &times;
-                                        </button>
+                                        </Button>
                                     </span>
                                 );
                             })}

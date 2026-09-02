@@ -1,3 +1,15 @@
+.offcanvas.offcanvas-end .offcanvas-header .wizard-close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  width: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: $btn-back-color;
+}
+
 .create-org-grp-wizard {
   display: flex;
   flex-direction: column;

@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import useCreateOrgGrpStore, {
   emptyCreateOrgGrpBasicInfo,
   emptyCreateOrgGrpDetails,
+  emptyCreateOrgGrpHierarchy,
   emptyCreateOrgGrpOpportunity,
 } from "../useCreateOrgGrpStore";
 import { CreateOrgGrpEntity, Opportunity } from "@/components/CreateOrgGrp/types";
@@ -48,6 +49,7 @@ describe("useCreateOrgGrpStore", () => {
     expect(state.details).toEqual(emptyCreateOrgGrpDetails);
     expect(state.opportunity).toEqual(emptyCreateOrgGrpOpportunity);
     expect(state.basicInfo).toEqual(emptyCreateOrgGrpBasicInfo);
+    expect(state.hierarchy).toEqual(emptyCreateOrgGrpHierarchy);
     expect(state.orgs).toEqual([]);
     expect(state.groups).toEqual([]);
   });
@@ -93,6 +95,23 @@ describe("useCreateOrgGrpStore", () => {
     expect(getState().groups).toEqual([]);
   });
 
+  it("stores hierarchy placements", () => {
+    getState().setHierarchy({
+      parentQuery: "Blue Cross",
+      placements: [
+        {
+          entityId: "org-1",
+          entityType: "org",
+          parentId: "parent-1",
+          parentName: "Blue Cross Blue Shield of North Carolina",
+        },
+      ],
+    });
+
+    expect(getState().hierarchy.parentQuery).toBe("Blue Cross");
+    expect(getState().hierarchy.placements).toHaveLength(1);
+  });
+
   it("resets the whole create flow", () => {
     getState().setDetails({ priority: "HIGH" });
     getState().setOpportunity({ accountQuery: "foo" });
@@ -101,6 +120,7 @@ describe("useCreateOrgGrpStore", () => {
 
     expect(getState().details).toEqual(emptyCreateOrgGrpDetails);
     expect(getState().opportunity).toEqual(emptyCreateOrgGrpOpportunity);
+    expect(getState().hierarchy).toEqual(emptyCreateOrgGrpHierarchy);
     expect(getState().orgs).toEqual([]);
   });
 });
