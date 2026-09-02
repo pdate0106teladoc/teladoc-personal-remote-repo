@@ -6,6 +6,11 @@ import { BasicInfoForm } from "./BasicInfoForm";
 import { HierarchyForm } from "./HierarchyForm";
 import { AccountLinkageForm } from "./AccountLinkageForm";
 import { ConfirmationForm } from "./ConfirmationForm";
+import { isManualBasicInfoComplete } from "./types";
+import useCreateOrgGrpStore, {
+    emptyCreateOrgGrpBasicInfo,
+    emptyCreateOrgGrpOpportunity,
+} from "@/store/useCreateOrgGrpStore";
 
 const STEPS = [
     "1. Opportunity",
@@ -20,11 +25,26 @@ interface CreateOrgGrpWizardProps {
     onClose: () => void;
 }
 
-
 const CreateOrgGrpWizard: React.FC<CreateOrgGrpWizardProps> = ({ show, onClose }) => {
     const [activeIndex, setActiveIndex] = useState(0);
+    const selectedOpportunities = useCreateOrgGrpStore(
+        (state) => state.opportunity.selectedOpportunities,
+    );
+    const createTypes = useCreateOrgGrpStore((state) => state.details.createTypes);
+    const basicInfoMethod = useCreateOrgGrpStore((state) => state.details.basicInfoMethod);
+    const bulkFile = useCreateOrgGrpStore((state) => state.basicInfo.bulkFile);
+    const orgRecords = useCreateOrgGrpStore((state) => state.basicInfo.orgRecords);
+    const groupRecords = useCreateOrgGrpStore((state) => state.basicInfo.groupRecords);
     const isFirstStep = activeIndex === 0;
     const isLastStep = activeIndex === STEPS.length - 1;
+    const isBasicInfoStep = activeIndex === 1;
+    const basicInfoIncomplete =
+        basicInfoMethod === "manual"
+            ? !isManualBasicInfoComplete(createTypes, orgRecords, groupRecords)
+            : !bulkFile;
+    const primaryDisabled =
+        (isFirstStep && selectedOpportunities.length === 0) ||
+        (isBasicInfoStep && basicInfoIncomplete);
     const renderContent = (index: number) => {
         switch (index) {
             case 0: return <OppurtunityForm />;
@@ -41,7 +61,20 @@ const CreateOrgGrpWizard: React.FC<CreateOrgGrpWizardProps> = ({ show, onClose }
         onClose();
     };
 
-    const handleBack = () => setActiveIndex((prev) => Math.max(prev - 1, 0));
+    const handleRestart = () => {
+        const store = useCreateOrgGrpStore.getState();
+        store.setOpportunity({ ...emptyCreateOrgGrpOpportunity });
+        store.setBasicInfo({ ...emptyCreateOrgGrpBasicInfo });
+        store.setOrgs([]);
+        store.setGroups([]);
+        setActiveIndex(0);
+    };
+
+    const primaryLabel = isFirstStep
+        ? "Add from opportunity"
+        : isLastStep
+            ? "Confirm"
+            : "Continue";
 
     const handleNext = () => {
         if (isLastStep) {
@@ -74,11 +107,20 @@ const CreateOrgGrpWizard: React.FC<CreateOrgGrpWizardProps> = ({ show, onClose }
                 </div>
 
                 <div className={`footer${isFirstStep ? " no-top-border" : ""}`}>
-                    <Button variant="secondary" onClick={isFirstStep ? handleClose : handleBack}>
-                        {isFirstStep ? "Cancel" : "Back"}
-                    </Button>
-                    <Button variant="primary" onClick={handleNext}>
-                        {isLastStep ? "Confirm" : "Continue"}
+                    <div className="footer-left">
+                        <Button variant="secondary" onClick={handleClose}>
+                            Cancel
+                        </Button>
+                        <Button variant="secondary" onClick={handleRestart}>
+                            Restart
+                        </Button>
+                    </div>
+                    <Button
+                        variant="primary"
+                        onClick={handleNext}
+                        disabled={primaryDisabled}
+                    >
+                        {primaryLabel}
                     </Button>
                 </div>
             </div>
