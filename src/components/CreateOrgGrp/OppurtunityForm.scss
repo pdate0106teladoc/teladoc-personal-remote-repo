@@ -12,22 +12,36 @@
 
         .custom-button {
             min-width: fit-content;
+            font-size: 14px;
         }
     }
 
     .opp-form-results {
         display: flex;
         flex-direction: column;
+        gap: 0px;
+        // The selected-opportunities panel and wizard footer are absolutely
+        // positioned over the bottom of the drawer, so the list scrolls itself
+        // instead of relying on the drawer scroll, which can't reach the end.
+        max-height: calc(100vh - 400px);
+        min-height: 200px;
+        overflow-y: auto;
     }
 
     .opp-card {
         display: flex;
         gap: 12px;
         padding: 16px;
-        border-bottom: 1px solid #e6e6ea;
+        border-bottom: 1px solid $table-bordercolor;
+        background: #FAFAFA;
+        transition: border-color 0.15s ease, background-color 0.15s ease;
 
+        &:last-child {
+            border-bottom: none;
+        }
         &.selected {
-            background: #f7f5ff;
+            border-color: #fff;
+            background: #E6E6E6;
         }
 
         .opp-card-select {
@@ -41,7 +55,7 @@
 
         .opp-card-header {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: space-between;
             gap: 12px;
             margin-bottom: 12px;
@@ -51,17 +65,17 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            font-weight: 600;
-            font-size: 15px;
-            color: #1a1a24;
+            font-weight: $font-weight-semi-bold;
+            font-size: $font-size-small;
+            color: $primary-black;
 
             .opp-card-link {
                 display: inline-flex;
-                color: #6b6b76;
+                color: $neutral-stroke;
                 cursor: pointer;
 
                 &:hover {
-                    color: #4a3aff;
+                    color: $link-color;
                 }
             }
         }
@@ -69,22 +83,28 @@
         .opp-card-details {
             display: flex;
             flex-direction: column;
-            gap: 6px;
         }
 
         .opp-card-detail-row {
-            display: flex;
-            font-size: 13px;
-            line-height: 18px;
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            align-items: start;
+            gap: 8px 24px;
+            padding: 4px 0;
 
             .opp-card-detail-label {
-                width: 200px;
-                flex-shrink: 0;
-                color: #6b6b76;
+                font-weight: $font-weight-regular;
+                font-size: $font-size-xs;
+                color: $neutral-stroke;
+                line-height: 1.4;
             }
 
             .opp-card-detail-value {
-                color: #1a1a24;
+                font-weight: $font-weight-regular;
+                font-size: $font-size-small;
+                color: $primary-black;
+                line-height: 1.4;
+                word-break: break-word;
             }
         }
     }
@@ -122,6 +142,13 @@
                     color: #1a1a24;
                 }
 
+                .opp-footer-icon-empty {
+                    width: 16px;
+                    height: 16px;
+                    flex-shrink: 0;
+                    color: $neutral-stroke;
+                }
+
                 .clear-btn {
                     font-weight: 400;
                     font-size: 14px;
@@ -150,12 +177,12 @@
                     display: inline-flex;
                     align-items: center;
                     gap: 6px;
-                    background: #fff;
-                    border: 1px solid #e6e6ea;
-                    border-radius: 16px;
+                    background: rgba($link-color, 0.08);
+                    border: 1px solid rgba($link-color, 0.16);
+                    border-radius: 4px;
                     padding: 4px 12px;
                     font-size: 13px;
-                    color: #1a1a24;
+                    color: $link-color;
 
                     .opp-footer-chip-remove {
                         display: inline-flex;
@@ -166,11 +193,11 @@
                         padding: 0;
                         font-size: 16px;
                         line-height: 1;
-                        color: #6b6b76;
+                        color: $link-color;
                         cursor: pointer;
 
                         &:hover {
-                            color: #1a1a24;
+                            opacity: 0.7;
                         }
                     }
                 }

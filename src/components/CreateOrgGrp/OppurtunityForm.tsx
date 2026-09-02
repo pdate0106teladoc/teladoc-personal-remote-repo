@@ -1,7 +1,8 @@
 import { Button, CustomCheckbox, FailSafePage, RoundedLabel, SearchBar, SearchIcon, SuccessIcon } from "@ucc/common-ui";
-import { useState } from "react";
+import { BsCheckCircle } from "react-icons/bs";
 import "./OppurtunityForm.scss";
 import { Opportunities, Opportunity } from "./types";
+import useCreateOrgGrpStore from "@/store/useCreateOrgGrpStore";
 
 const opportunities: Opportunities = [
     {
@@ -17,7 +18,7 @@ const opportunities: Opportunities = [
     {
         "title": "Expansion - BSBC North Carolina - New Business 2026",
         "status": "Closed Won",
-        "opportunityGUID": "AAAA97E2-F1F0-00B1-1041-D3CD112234EW",
+        "opportunityGUID": "AAAA97E2-F1F0-00B1-1041-D3CD112234EWu",
         "gcrmContractNumber": "2025003-00126789",
         "gcrmContractingAccount": "BSBC North Carolina",
         "effectiveStartDate": "2026-01-01",
@@ -25,9 +26,9 @@ const opportunities: Opportunities = [
         "type": "New business"
     },
     {
-        "title": "Expansion - BSBC North Carolina - New Business 2026",
+        "title": "Expansion - BSBC North Carolinas - New Business 2026",
         "status": "Closed Won",
-        "opportunityGUID": "AAAA97E2-F1F0-00B1-1041-D3CD112234EW",
+        "opportunityGUID": "AAAA97E2-F1F0-00B1-1041-D3CD112234EWy",
         "gcrmContractNumber": "2025003-00126789",
         "gcrmContractingAccount": "BSBC North Carolina",
         "effectiveStartDate": "2026-01-01",
@@ -35,9 +36,9 @@ const opportunities: Opportunities = [
         "type": "New business"
     },
     {
-        "title": "Expansion - BSBC North Carolina - New Business 2026",
+        "title": "Expansion - BSBC North Carolinaq - New Business 2026",
         "status": "Closed Won",
-        "opportunityGUID": "AAAA97E2-F1F0-00B1-1041-D3CD112234EW",
+        "opportunityGUID": "AAAA97E2-F1F0-00B1-1041-D3CD112234EWr",
         "gcrmContractNumber": "2025003-00126789",
         "gcrmContractingAccount": "BSBC North Carolina",
         "effectiveStartDate": "2026-01-01",
@@ -45,9 +46,9 @@ const opportunities: Opportunities = [
         "type": "New business"
     },
     {
-        "title": "Expansion - BSBC North Carolina - New Business 2026",
+        "title": "Expansion - BSBC North Carolinaw - New Business 2026",
         "status": "Closed Won",
-        "opportunityGUID": "AAAA97E2-F1F0-00B1-1041-D3CD112234EW",
+        "opportunityGUID": "AAAA97E2-F1F0-00B1-1041-D3CD112234EWqw",
         "gcrmContractNumber": "2025003-00126789",
         "gcrmContractingAccount": "BSBC North Carolina",
         "effectiveStartDate": "2026-01-01",
@@ -55,9 +56,9 @@ const opportunities: Opportunities = [
         "type": "New business"
     },
     {
-        "title": "Expansion - BSBC North Carolina - New Business 2026",
+        "title": "Expansion - BSBC North Carolinar - New Business 2026",
         "status": "Closed Won",
-        "opportunityGUID": "AAAA97E2-F1F0-00B1-1041-D3CD112234EW",
+        "opportunityGUID": "AAAA97E2-F1F0-00B1-1041-D3CD112234EWq",
         "gcrmContractNumber": "2025003-00126789",
         "gcrmContractingAccount": "BSBC North Carolina",
         "effectiveStartDate": "2026-01-01",
@@ -79,13 +80,15 @@ const formatDate = (isoDate: string): string => {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 };
 
-const getOpportunityKey = (opp: Opportunity): string => opp.gcrmContractNumber;
+// GUID, not the contract number: several opportunities can share one contract.
+const getOpportunityKey = (opp: Opportunity): string => opp.opportunityGUID;
 
 const OpportunityCard: React.FC<{
     opportunity: Opportunity;
     checked: boolean;
     onToggle: (checked: boolean) => void;
-}> = ({ opportunity, checked, onToggle }) => {
+    checkboxId: string;
+}> = ({ opportunity, checked, onToggle, checkboxId }) => {
     const details: { label: string; value: string }[] = [
         { label: "Opportunity GUID", value: opportunity.opportunityGUID },
         { label: "GCRM contract number", value: opportunity.gcrmContractNumber },
@@ -99,7 +102,7 @@ const OpportunityCard: React.FC<{
         <div className={`opp-card ${checked ? "selected" : ""}`}>
             <div className="opp-card-select">
                 <CustomCheckbox
-                    id={`opp-${getOpportunityKey(opportunity)}`}
+                    id={checkboxId}
                     checked={checked}
                     onChange={onToggle}
                 />
@@ -126,20 +129,38 @@ const OpportunityCard: React.FC<{
 };
 
 export const OppurtunityForm: React.FC = () => {
-    const [accountQuery, setAccountQuery] = useState("");
-    const [opportunityQuery, setOpportunityQuery] = useState("");
-    const [results, setResults] = useState<Opportunities>([]);
-    const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+    const accountQuery = useCreateOrgGrpStore((state) => state.opportunity.accountQuery);
+    const opportunityQuery = useCreateOrgGrpStore((state) => state.opportunity.opportunityQuery);
+    const results = useCreateOrgGrpStore((state) => state.opportunity.results);
+    const selectedOpportunities = useCreateOrgGrpStore(
+        (state) => state.opportunity.selectedOpportunities,
+    );
+    const setOpportunity = useCreateOrgGrpStore((state) => state.setOpportunity);
 
-    const selectedOpportunities = results.filter((opp) => selectedKeys.includes(getOpportunityKey(opp)));
+    const selectedKeys = selectedOpportunities.map(getOpportunityKey);
+    const hasSelection = selectedOpportunities.length > 0;
 
     const handleShowResults = () => {
-        setResults(opportunities);
-        setSelectedKeys([]);
+        setOpportunity({
+            results: opportunities,
+            selectedOpportunities: [],
+        });
     };
 
     const toggleSelection = (key: string, checked: boolean) => {
-        setSelectedKeys((prev) => (checked ? [...prev, key] : prev.filter((k) => k !== key)));
+        if (checked) {
+            if (selectedOpportunities.some((opp) => getOpportunityKey(opp) === key)) return;
+            const source = results.length > 0 ? results : opportunities;
+            const match = source.find((opp) => getOpportunityKey(opp) === key);
+            if (!match) return;
+            setOpportunity({ selectedOpportunities: [...selectedOpportunities, match] });
+            return;
+        }
+        setOpportunity({
+            selectedOpportunities: selectedOpportunities.filter(
+                (opp) => getOpportunityKey(opp) !== key,
+            ),
+        });
     };
 
     return (
@@ -148,14 +169,14 @@ export const OppurtunityForm: React.FC = () => {
                 <SearchBar
                     overlayRequired={false}
                     placeholder="Enter account name or ID"
-                    onChange={(e) => setAccountQuery(e.target.value)}
+                    onChange={(e) => setOpportunity({ accountQuery: e.target.value })}
                     value={accountQuery}
                     type="md"
                 />
                 <SearchBar
                     overlayRequired={false}
                     placeholder="Enter opportunity name and GUID"
-                    onChange={(e) => setOpportunityQuery(e.target.value)}
+                    onChange={(e) => setOpportunity({ opportunityQuery: e.target.value })}
                     value={opportunityQuery}
                     type="md"
                 />
@@ -171,7 +192,7 @@ export const OppurtunityForm: React.FC = () => {
                         icon={<SearchIcon />}
                     />
                 ) : (
-                    results.map((opp) => {
+                    results.map((opp, index) => {
                         const key = getOpportunityKey(opp);
                         return (
                             <OpportunityCard
@@ -179,6 +200,7 @@ export const OppurtunityForm: React.FC = () => {
                                 opportunity={opp}
                                 checked={selectedKeys.includes(key)}
                                 onToggle={(checked) => toggleSelection(key, checked)}
+                                checkboxId={`opp-card-${index}`}
                             />
                         );
                     })
@@ -188,12 +210,25 @@ export const OppurtunityForm: React.FC = () => {
                 <div className="opp-form-footer">
                     <div className="opp-footer-header">
                         <div className="d-flex align-items-center gap-1">
-                            <SuccessIcon />
+                            {hasSelection ? (
+                                <SuccessIcon />
+                            ) : (
+                                <BsCheckCircle className="opp-footer-icon-empty" />
+                            )}
                             <span className="opp-footer-title">Selected opportunities ({selectedOpportunities.length})</span>
                         </div>
-                        <span className="clear-btn" onClick={() => setSelectedKeys([])}>Clear all</span>
+                        {hasSelection && (
+                            <span
+                                className="clear-btn"
+                                onClick={() => {
+                                    setOpportunity({ selectedOpportunities: [] });
+                                }}
+                            >
+                                Clear all
+                            </span>
+                        )}
                     </div>
-                    {selectedOpportunities.length === 0 ? (
+                    {!hasSelection ? (
                         <p className="opp-footer-empty">
                             Run a search above to find opportunities, then check the ones to add.
                         </p>

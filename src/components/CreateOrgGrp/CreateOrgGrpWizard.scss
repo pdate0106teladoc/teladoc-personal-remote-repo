@@ -25,14 +25,6 @@
     }
   }
 
-  .wizard-content {
-    .wizard-step-title {
-      font-size: $font-size-small;
-      font-weight: $font-weight-semi-bold;
-      color: $primary-black;
-    }
-  }
-
   .footer {
     position: absolute;
     bottom: 0;
@@ -51,6 +43,15 @@
 
     button {
       width: revert;
+    }
+
+    .footer-left {
+      display: flex;
+      gap: 12px;
+    }
+
+    .custom-button {
+      font-size: 14px;
     }
   }
 }

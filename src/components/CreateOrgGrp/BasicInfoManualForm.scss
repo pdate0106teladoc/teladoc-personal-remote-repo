@@ -1,0 +1,343 @@
+$manual-label-col: 180px;
+$manual-control-col: 470px;
+$manual-control-height: 30px;
+
+.basic-info-manual {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    .required {
+        color: $btn-danger-color;
+    }
+
+    .manual-tabs {
+        display: flex;
+        gap: 20px;
+        border-bottom: 1px solid $table-bordercolor;
+
+        .manual-tab {
+            border: none;
+            background: transparent;
+            padding: 6px 2px 8px;
+            font-size: $font-size-small;
+            font-weight: $font-weight-regular;
+            color: $neutral-stroke;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+
+            &.active {
+                color: $primary-black;
+                font-weight: $font-weight-semi-bold;
+                border-bottom-color: $link-color;
+            }
+        }
+    }
+
+    .manual-count-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .manual-count-label {
+            font-size: $font-size-xs;
+            font-weight: $font-weight-regular;
+            color: $primary-black;
+            margin-bottom: 0;
+        }
+
+        .manual-count-input {
+            width: 85px;
+            height: $manual-control-height;
+            padding: 0 8px;
+            border: 1px solid $neutral-strole-1;
+            border-radius: 4px;
+            background: $color-white;
+            font-size: $font-size-xs;
+            color: $primary-black;
+
+            &:focus {
+                outline: none;
+                border-color: $link-color;
+            }
+        }
+
+        .manual-opp-counter {
+            margin-left: auto;
+            font-size: $font-size-xs;
+            font-weight: $font-weight-semi-bold;
+            color: $primary-black;
+        }
+    }
+
+    .manual-records {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .manual-record {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 14px 16px;
+        background: $neutral-background-hover;
+        border-radius: 6px;
+
+        .manual-record-fields {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .manual-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            .manual-field-label {
+                flex: 0 0 $manual-label-col;
+                font-size: $font-size-xs;
+                font-weight: $font-weight-regular;
+                color: $primary-black;
+            }
+
+            .manual-field-control {
+                flex: 1 1 auto;
+                min-width: 0;
+                max-width: $manual-control-col;
+            }
+
+            // Shared inputs ship with their own bottom spacing and 14px text; the card
+            // rows are compact, so tighten them locally.
+            .custom-input-wrapper {
+                margin-bottom: 0;
+            }
+
+            .custom-input-field {
+                height: $manual-control-height;
+                padding: 0 8px;
+                border-color: $neutral-strole-1;
+                border-radius: 4px;
+                font-size: $font-size-xs;
+                background: $color-white;
+
+                &::placeholder {
+                    color: $neutral-foreground;
+                }
+            }
+
+            .custom-radio-group .radio-options {
+                display: flex;
+                align-items: center;
+                gap: 40px;
+                height: $manual-control-height;
+
+                .radio-label {
+                    font-size: $font-size-xs;
+                    color: $primary-black;
+                }
+            }
+
+            .manual-date-control {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+
+            .manual-apply-all {
+                display: inline-flex;
+                align-items: center;
+                height: $manual-control-height;
+                line-height: $manual-control-height;
+                font-size: $font-size-xs;
+                color: $link-color;
+                cursor: pointer;
+                white-space: nowrap;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+
+            .manual-date {
+                width: 175px;
+                display: flex;
+                align-items: center;
+                height: $manual-control-height;
+
+                // DatePicker wraps extra markup (label, error). Collapse that so
+                // "Apply to all" lines up with the input, not the outer wrapper.
+                > div,
+                .react-datepicker-wrapper,
+                .react-datepicker__input-container {
+                    display: flex;
+                    align-items: center;
+                    height: $manual-control-height;
+                    margin: 0;
+                }
+
+                .custom-input-wrapper,
+                .form-control,
+                input {
+                    margin-bottom: 0;
+                    height: $manual-control-height;
+                    font-size: $font-size-xs;
+                }
+            }
+        }
+
+        .manual-record-remove {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: $manual-control-height;
+            border: none;
+            background: transparent;
+            padding: 0 2px;
+            cursor: pointer;
+            color: $neutral-stroke;
+
+            svg {
+                width: 16px;
+                height: 16px;
+            }
+
+            &:hover {
+                color: $primary-black;
+            }
+        }
+    }
+
+    .opp-select {
+        position: relative;
+
+        .opp-select-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: $manual-control-height;
+            padding: 3px 8px;
+            border: 1px solid $neutral-strole-1;
+            border-radius: 4px;
+            background: $color-white;
+            cursor: pointer;
+
+            &.open {
+                border-color: $link-color;
+            }
+
+            .opp-select-placeholder {
+                flex: 1;
+                font-size: $font-size-xs;
+                color: $neutral-foreground;
+            }
+
+            .opp-select-chips {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                min-width: 0;
+                flex: 1;
+            }
+
+            .opp-select-caret {
+                margin-left: auto;
+                flex-shrink: 0;
+                width: 12px;
+                height: 12px;
+                color: $neutral-stroke;
+            }
+        }
+
+        .opp-select-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            max-width: 100%;
+            padding: 1px 4px 1px 6px;
+            border-radius: 3px;
+            background: $neutral-background-hover;
+            font-size: $font-size-xs;
+            color: $primary-black;
+
+            .opp-select-chip-text {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .opp-select-chip-remove {
+                display: inline-flex;
+                align-items: center;
+                border: none;
+                background: transparent;
+                padding: 0;
+                color: $neutral-stroke;
+                cursor: pointer;
+
+                svg {
+                    width: 14px;
+                    height: 14px;
+                }
+
+                &:hover {
+                    color: $primary-black;
+                }
+            }
+        }
+
+        .opp-select-menu {
+            position: absolute;
+            z-index: 5;
+            top: calc(100% + 2px);
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 0;
+            padding: 4px 0;
+            list-style: none;
+            background: $color-white;
+            border: 1px solid $neutral-strole-1;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px $border-shadow-color;
+
+            .opp-select-empty {
+                padding: 6px 10px;
+                font-size: $font-size-xs;
+                color: $neutral-foreground;
+            }
+
+            .opp-select-option {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                width: 100%;
+                margin: 0;
+                padding: 6px 10px;
+                font-size: $font-size-xs;
+                color: $primary-black;
+                cursor: pointer;
+
+                input[type="checkbox"] {
+                    flex-shrink: 0;
+                    margin: 0;
+                    accent-color: $link-color;
+                    cursor: pointer;
+                }
+
+                &:hover {
+                    background: $neutral-background-hover;
+                }
+
+                &.selected {
+                    font-weight: $font-weight-semi-bold;
+                }
+            }
+        }
+    }
+}

@@ -1,7 +1,9 @@
 import { ArrowDownload, Button } from "@ucc/common-ui";
+import useCreateOrgGrpStore from "@/store/useCreateOrgGrpStore";
+import { BasicInfoManualForm } from "./BasicInfoManualForm";
 import "./BasicInfoForm.scss";
 
-export const BasicInfoForm: React.FC = () => {
+const BasicInfoUploadForm: React.FC = () => {
     const handleDownloadTemplate = () => {
         // TODO: wire to the real template URL / download endpoint.
     };
@@ -27,5 +29,17 @@ export const BasicInfoForm: React.FC = () => {
                 </div>
             </div>
         </div>
+    );
+};
+
+export const BasicInfoForm: React.FC = () => {
+    const basicInfoMethod = useCreateOrgGrpStore(
+        (state) => state.details.basicInfoMethod,
+    );
+
+    return basicInfoMethod === "manual" ? (
+        <BasicInfoManualForm />
+    ) : (
+        <BasicInfoUploadForm />
     );
 };

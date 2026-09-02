@@ -1,91 +1,22 @@
 import { Tab, Tabs } from "react-bootstrap";
 import { RoundedLabel, SuccessIcon } from "@ucc/common-ui";
+import useCreateOrgGrpStore from "@/store/useCreateOrgGrpStore";
+import {
+    AccountType,
+    CreateOrgGrpEntity,
+    LcrmRelationshipType,
+} from "./types";
 import "./ConfirmationForm.scss";
 
-type LcrmRelationshipType =
-    | "direct"
-    | "parent_derived"
-    | "DIRECT"
-    | "PARENT_DERIVED";
+const PRIORITY_LABEL: Record<string, string> = {
+    NORMAL: "Normal",
+    HIGH: "High",
+    URGENT: "Urgent",
+};
 
-interface AccountType {
-    id: string;
-    isNewAccount: boolean;
-    accountName: string;
-    lcrmRelationship: LcrmRelationshipType;
-}
-
-interface Entity {
-    entityName: string;
-    parentOrganization: string;
-    lcrmTelemedAccount: AccountType;
-    lcrmCcmAccount: AccountType;
-    opportunity: string;
-    isBilling: boolean;
-}
-
-interface ConfirmedData {
-    taskId: string;
-    priority: string;
-    typeOfEdit: string[];
-    plannedLaunchDate: string;
-    opportunity: string;
-    fileForBulkCreateAndEdit: File;
-    orgs: Entity[];
-    groups: Entity[];
-}
-
-const mock: ConfirmedData = {
-    taskId: "O-88990",
-    priority: "Normal",
-    typeOfEdit: ["New org add", "New group add"],
-    plannedLaunchDate: "Jan 1, 2027",
-    opportunity:
-        "Expansion - BSBC North Carolina - New Business 2026; Expansion Amendment - BSBC North Carolina - New Business 2026",
-    fileForBulkCreateAndEdit: new File(
-        [new ArrayBuffer(3 * 1024 * 1024)],
-        "bulk_org_create_02282026.csv",
-        { type: "text/csv" },
-    ),
-    orgs: [
-        {
-            entityName: "BCBS City of Charlotte",
-            parentOrganization: "Blue Cross Blue Shield of NC",
-            opportunity: "Blue Cross Blue Shield of NC Expansion 2026 - 2027",
-            isBilling: false,
-            lcrmTelemedAccount: {
-                id: "tlmd-charlotte-001",
-                isNewAccount: true,
-                accountName: "BCBS City of Charlotte",
-                lcrmRelationship: "direct",
-            },
-            lcrmCcmAccount: {
-                id: "ccm-charlotte-001",
-                isNewAccount: true,
-                accountName: "BCBS City of Charlotte",
-                lcrmRelationship: "direct",
-            },
-        },
-        {
-            entityName: "BCBS City of Newton",
-            parentOrganization: "Blue Cross Blue Shield of NC",
-            opportunity: "Blue Cross Blue Shield of NC Expansion 2026 - 2027",
-            isBilling: false,
-            lcrmTelemedAccount: {
-                id: "tlmd-newton-001",
-                isNewAccount: false,
-                accountName: "Blue Cross Blue Shield of NC",
-                lcrmRelationship: "parent_derived",
-            },
-            lcrmCcmAccount: {
-                id: "ccm-newton-001",
-                isNewAccount: false,
-                accountName: "Blue Cross Blue Shield of NC",
-                lcrmRelationship: "parent_derived",
-            },
-        },
-    ],
-    groups: [],
+const CREATE_TYPE_LABEL: Record<string, string> = {
+    organizations: "New org add",
+    groups: "New group add",
 };
 
 const formatFileSizeMB = (bytes: number): string => {
@@ -135,7 +66,7 @@ const AccountRow: React.FC<{ label: string; account: AccountType }> = ({
     );
 };
 
-const EntityCard: React.FC<{ entity: Entity }> = ({ entity }) => (
+const EntityCard: React.FC<{ entity: CreateOrgGrpEntity }> = ({ entity }) => (
     <div className="entity-card">
         <div className="entity-card-header">
             <span className="entity-card-title">{entity.entityName}</span>
@@ -164,7 +95,7 @@ const EntityCard: React.FC<{ entity: Entity }> = ({ entity }) => (
     </div>
 );
 
-const EntityList: React.FC<{ entities: Entity[] }> = ({ entities }) => (
+const EntityList: React.FC<{ entities: CreateOrgGrpEntity[] }> = ({ entities }) => (
     <div className="entity-list">
         {entities.map((entity) => (
             <EntityCard key={entity.entityName} entity={entity} />
@@ -172,53 +103,87 @@ const EntityList: React.FC<{ entities: Entity[] }> = ({ entities }) => (
     </div>
 );
 
+const formatPlannedLaunchDate = (
+    launchOption: string,
+    launchDate: Date | null,
+): string => {
+    if (launchOption === "today") return "Today";
+    if (!launchDate) return "";
+    return launchDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    });
+};
+
 export const ConfirmationForm = () => {
-    const data = mock;
+    const details = useCreateOrgGrpStore((state) => state.details);
+    const selectedOpportunities = useCreateOrgGrpStore(
+        (state) => state.opportunity.selectedOpportunities,
+    );
+    const bulkFile = useCreateOrgGrpStore((state) => state.basicInfo.bulkFile);
+    const orgs = useCreateOrgGrpStore((state) => state.orgs);
+    const groups = useCreateOrgGrpStore((state) => state.groups);
+
+    const priority =
+        PRIORITY_LABEL[details.priority] ?? (details.priority || "—");
+    const typeOfEdit = details.createTypes.map(
+        (type) => CREATE_TYPE_LABEL[type] ?? type,
+    );
+    const opportunityTitles = selectedOpportunities.map((opp) => opp.title);
 
     return (
         <div className="confirmation-form">
             <div className="confirm-info-list" role="list">
-                <InfoRow label="Task ID">{data.taskId}</InfoRow>
                 <InfoRow label="Priority">
                     <span className="confirm-priority">
                         <span className="confirm-priority-dot" />
-                        {data.priority}
+                        {priority}
                     </span>
                 </InfoRow>
                 <InfoRow label="Type of edit">
-                    {data.typeOfEdit.join("; ")}
+                    {typeOfEdit.length > 0 ? typeOfEdit.join("; ") : "—"}
                 </InfoRow>
                 <InfoRow label="Planned launch date">
-                    {data.plannedLaunchDate}
+                    {formatPlannedLaunchDate(
+                        details.launchOption,
+                        details.launchDate,
+                    ) || "—"}
                 </InfoRow>
                 <InfoRow label="Opportunity">
                     <div className="confirm-opportunity-list">
-                        {data.opportunity.split(";").map((opp) => (
-                            <span key={opp} className="confirm-link">
-                                {opp.trim()}
-                            </span>
-                        ))}
+                        {opportunityTitles.length > 0
+                            ? opportunityTitles.map((opp) => (
+                                <span key={opp} className="confirm-link">
+                                    {opp}
+                                </span>
+                            ))
+                            : "—"}
                     </div>
                 </InfoRow>
                 <InfoRow label="File for bulk create and edit:">
-                    <span className="confirm-file">
-                        <span className="confirm-file-name">
-                            {data.fileForBulkCreateAndEdit.name}
+                    {bulkFile ? (
+                        <span className="confirm-file">
+                            <span className="confirm-file-name">
+                                {bulkFile.name}
+                            </span>
+                            <span className="confirm-file-size">
+                                {formatFileSizeMB(bulkFile.size)}
+                            </span>
+                            <SuccessIcon />
                         </span>
-                        <span className="confirm-file-size">
-                            {formatFileSizeMB(data.fileForBulkCreateAndEdit.size)}
-                        </span>
-                        <SuccessIcon />
-                    </span>
+                    ) : (
+                        "—"
+                    )}
                 </InfoRow>
             </div>
 
             <Tabs defaultActiveKey="orgs" className="confirm-tabs mb-3">
-                <Tab eventKey="orgs" title={`Orgs (${data.orgs.length})`}>
-                    <EntityList entities={data.orgs} />
+                <Tab eventKey="orgs" title={`Orgs (${orgs.length})`}>
+                    <EntityList entities={orgs} />
                 </Tab>
-                <Tab eventKey="groups" title={`Groups (${data.groups.length})`}>
-                    <EntityList entities={data.groups} />
+                <Tab eventKey="groups" title={`Groups (${groups.length})`}>
+                    <EntityList entities={groups} />
                 </Tab>
             </Tabs>
         </div>

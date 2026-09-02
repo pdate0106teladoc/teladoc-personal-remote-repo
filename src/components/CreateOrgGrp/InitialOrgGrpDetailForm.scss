@@ -45,6 +45,17 @@
     color: $btn-danger-color;
   }
 
+  // The shared .required-label is display:flex, which pushes the asterisk onto
+  // its own line under the field label.
+  .dropdown-with-icon-label .required-label {
+    display: inline;
+    margin-top: 0;
+  }
+
+  .checkbox-group-wrapper {
+    padding: 0;
+  }
+
   .info-text {
     gap: 4px;
 
@@ -101,7 +112,7 @@
 
   .error-message {
     display: block;
-    margin-top: 4px;
+    margin-top: 2px;
     font-size: $font-size-xs;
     font-weight: $font-weight-regular;
     color: $btn-danger-color;
@@ -158,6 +169,10 @@
         }
       }
     }
+  }
+
+  .file-upload {
+    margin-bottom: 0;
   }
 
   .footer {
