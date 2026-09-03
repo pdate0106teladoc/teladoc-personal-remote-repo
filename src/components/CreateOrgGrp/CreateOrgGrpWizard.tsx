@@ -14,12 +14,27 @@ import useCreateOrgGrpStore, {
     emptyCreateOrgGrpOpportunity,
 } from "@/store/useCreateOrgGrpStore";
 
-const STEPS = [
-    "1. Opportunity",
-    "2. Basic information",
-    "3. Hierarchy",
-    "4. Account linkage",
-    "5. Confirmation",
+type StepKey =
+    | "opportunity"
+    | "basicInfo"
+    | "hierarchy"
+    | "accountLinkage"
+    | "confirmation";
+
+const STEP_LABELS: Record<StepKey, string> = {
+    opportunity: "Opportunity",
+    basicInfo: "Basic information",
+    hierarchy: "Hierarchy",
+    accountLinkage: "Account linkage",
+    confirmation: "Confirmation",
+};
+
+const ALL_STEPS: StepKey[] = [
+    "opportunity",
+    "basicInfo",
+    "hierarchy",
+    "accountLinkage",
+    "confirmation",
 ];
 
 interface CreateOrgGrpWizardProps {
@@ -40,10 +55,15 @@ const CreateOrgGrpWizard: React.FC<CreateOrgGrpWizardProps> = ({ show, onClose }
     const hierarchyPlacements = useCreateOrgGrpStore(
         (state) => state.hierarchy.placements,
     );
+
+    const steps = ALL_STEPS.filter(
+        (step) => step !== "accountLinkage" || createTypes.includes("organizations"),
+    );
+    const currentStep = steps[Math.min(activeIndex, steps.length - 1)];
     const isFirstStep = activeIndex === 0;
-    const isLastStep = activeIndex === STEPS.length - 1;
-    const isBasicInfoStep = activeIndex === 1;
-    const isHierarchyStep = activeIndex === 2;
+    const isLastStep = activeIndex === steps.length - 1;
+    const isBasicInfoStep = currentStep === "basicInfo";
+    const isHierarchyStep = currentStep === "hierarchy";
     const basicInfoIncomplete =
         basicInfoMethod === "manual"
             ? !isManualBasicInfoComplete(createTypes, orgRecords, groupRecords)
@@ -53,13 +73,13 @@ const CreateOrgGrpWizard: React.FC<CreateOrgGrpWizardProps> = ({ show, onClose }
         (isBasicInfoStep && basicInfoIncomplete) ||
         (isHierarchyStep &&
             hierarchyPlacements.length < orgRecords.length + groupRecords.length);
-    const renderContent = (index: number) => {
-        switch (index) {
-            case 0: return <OppurtunityForm />;
-            case 1: return <BasicInfoForm />;
-            case 2: return <HierarchyForm />;
-            case 3: return <AccountLinkageForm />;
-            case 4: return <ConfirmationForm />;
+    const renderContent = (step: StepKey) => {
+        switch (step) {
+            case "opportunity": return <OppurtunityForm />;
+            case "basicInfo": return <BasicInfoForm />;
+            case "hierarchy": return <HierarchyForm />;
+            case "accountLinkage": return <AccountLinkageForm />;
+            case "confirmation": return <ConfirmationForm />;
             default: return null;
         }
     };
@@ -90,11 +110,11 @@ const CreateOrgGrpWizard: React.FC<CreateOrgGrpWizardProps> = ({ show, onClose }
             handleClose();
             return;
         }
-        setActiveIndex((prev) => Math.min(prev + 1, STEPS.length - 1));
+        setActiveIndex((prev) => Math.min(prev + 1, steps.length - 1));
     };
 
-    const breadcrumbItems = STEPS.map((label, index) => ({
-        label,
+    const breadcrumbItems = steps.map((step, index) => ({
+        label: `${index + 1}. ${STEP_LABELS[step]}`,
         active: index === activeIndex,
         onClick: index < activeIndex ? () => setActiveIndex(index) : undefined,
     }));
@@ -132,7 +152,7 @@ const CreateOrgGrpWizard: React.FC<CreateOrgGrpWizardProps> = ({ show, onClose }
                     </div>
 
                     <div className="wizard-content">
-                        {renderContent(activeIndex)}
+                        {renderContent(currentStep)}
                     </div>
 
                     <div className={`footer${isFirstStep ? " no-top-border" : ""}`}>

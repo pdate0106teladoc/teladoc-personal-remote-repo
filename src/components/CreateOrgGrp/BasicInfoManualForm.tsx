@@ -341,7 +341,7 @@ export const BasicInfoManualForm: React.FC = () => {
                             </div>
                         </div>
 
-                        {records.length > 1 && (
+                        {index > 0 && (
                             <Button
                                 variant="secondary"
                                 className="manual-record-remove"

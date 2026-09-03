@@ -93,6 +93,20 @@ const InitialOrgGrpDetailForm: React.FC<InitialOrgGrpDetailFormProps> = ({
     };
     useCreateOrgGrpStore.getState().setDetails(payload);
     onContinue?.(payload);
+    removeSelection();
+  };
+
+  const removeSelection = () => {
+    setDropdownPriority("");
+    setLaunchOption("");
+    setDateValue(null);
+    setWorkfrontId("");
+    setWorkfrontLinkError(false);
+    setPlaybookLink("");
+    setPlaybookLinkError(false);
+    setCreateTypes([]);
+    setBasicInfoMethod("");
+    setFiles([]);
   };
   return (
     // Rendered directly instead of via SideModal so the backdrop can be static:
@@ -277,7 +291,7 @@ const InitialOrgGrpDetailForm: React.FC<InitialOrgGrpDetailFormProps> = ({
           <FileUpload onUpload={setFiles} />
 
           <div className="footer">
-            <Button variant="secondary" onClick={onCancel}>
+            <Button variant="secondary" onClick={() => { onCancel(); removeSelection(); }}>
               Cancel
             </Button>
             <Button
