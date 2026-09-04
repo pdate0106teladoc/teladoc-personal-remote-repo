@@ -1,12 +1,75 @@
+import { useEffect, useMemo } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import { RoundedLabel, SuccessIcon } from "@ucc/common-ui";
+import { formatUTCtoDateOnly } from "@/utils";
 import useCreateOrgGrpStore from "@/store/useCreateOrgGrpStore";
+import { stripParentCode } from "./data/lcrmAccounts";
 import {
     AccountType,
     CreateOrgGrpEntity,
-    LcrmRelationshipType,
+    HierarchyPlacement,
+    ManualEntityRecord,
+    Opportunities,
+    isParentDerivedRelationship,
 } from "./types";
 import "./ConfirmationForm.scss";
+
+// Hierarchy keeps the parent as "541 - Blue Cross Blue Shield of NC"; the review
+// cards show the name alone.
+const parentNamesByEntity = (
+    placements: HierarchyPlacement[],
+): Map<string, string> =>
+    new Map(
+        placements.map((placement) => [
+            placement.entityId,
+            stripParentCode(placement.parentName),
+        ]),
+    );
+
+const opportunityTitleFor = (
+    record: ManualEntityRecord,
+    opportunities: Opportunities,
+): string =>
+    opportunities
+        .filter((opportunity) =>
+            record.opportunityGuids.includes(opportunity.opportunityGUID),
+        )
+        .map((opportunity) => opportunity.title)
+        .join(", ");
+
+const emptyAccount = (recordId: string, system: string): AccountType => ({
+    id: `${recordId}-${system}`,
+    isNewAccount: false,
+    accountName: "",
+    lcrmRelationship: "parent_derived",
+    searchQuery: "",
+    selectedAccount: null,
+});
+
+// Groups are never linked to LCRM, so they only carry their placement data.
+const createGroupEntity = (
+    record: ManualEntityRecord,
+    parentName: string,
+    opportunity: string,
+): CreateOrgGrpEntity => ({
+    entityId: record.id,
+    entityName: record.name,
+    parentOrganization: parentName,
+    hasCcmProducts: false,
+    opportunity,
+    isBilling: false,
+    lcrmTelemedAccount: emptyAccount(record.id, "telemed"),
+    lcrmCcmAccount: emptyAccount(record.id, "ccm"),
+});
+
+const isSameGroupEntity = (
+    a: CreateOrgGrpEntity,
+    b: CreateOrgGrpEntity,
+): boolean =>
+    a.entityId === b.entityId &&
+    a.entityName === b.entityName &&
+    a.parentOrganization === b.parentOrganization &&
+    a.opportunity === b.opportunity;
 
 const PRIORITY_LABEL: Record<string, string> = {
     NORMAL: "Normal",
@@ -24,9 +87,6 @@ const formatFileSizeMB = (bytes: number): string => {
     return `${mb < 1 ? mb.toFixed(2) : Math.round(mb)} MB`;
 };
 
-const isParentDerived = (relationship: LcrmRelationshipType): boolean =>
-    relationship.toLowerCase() === "parent_derived";
-
 const InfoRow: React.FC<{ label: string; children: React.ReactNode }> = ({
     label,
     children,
@@ -41,7 +101,7 @@ const AccountRow: React.FC<{ label: string; account: AccountType }> = ({
     label,
     account,
 }) => {
-    const parentDerived = isParentDerived(account.lcrmRelationship);
+    const parentDerived = isParentDerivedRelationship(account.lcrmRelationship);
     return (
         <div className="entity-row">
             <span className="entity-row-label">{label}</span>
@@ -56,6 +116,11 @@ const AccountRow: React.FC<{ label: string; account: AccountType }> = ({
                         variant="grey"
                     />
                 </div>
+                {account.selectedAccount && (
+                    <span className="entity-account-guid">
+                        {account.selectedAccount.accountGuid}
+                    </span>
+                )}
                 {account.isNewAccount && (
                     <span className="entity-account-pending">
                         New account pending
@@ -83,14 +148,13 @@ const EntityCard: React.FC<{ entity: CreateOrgGrpEntity }> = ({ entity }) => (
                 <span className="entity-row-label">Opportunity</span>
                 <span className="entity-row-value">{entity.opportunity}</span>
             </div>
-            <AccountRow
-                label="LCRM Telemed account"
-                account={entity.lcrmTelemedAccount}
-            />
-            <AccountRow
-                label="LCRM CCM account"
-                account={entity.lcrmCcmAccount}
-            />
+            {/* Groups are never linked to LCRM, so the row only shows for orgs. */}
+            {entity.lcrmTelemedAccount.selectedAccount && (
+                <AccountRow
+                    label="LCRM Telemed account"
+                    account={entity.lcrmTelemedAccount}
+                />
+            )}
         </div>
     </div>
 );
@@ -98,23 +162,10 @@ const EntityCard: React.FC<{ entity: CreateOrgGrpEntity }> = ({ entity }) => (
 const EntityList: React.FC<{ entities: CreateOrgGrpEntity[] }> = ({ entities }) => (
     <div className="entity-list">
         {entities.map((entity) => (
-            <EntityCard key={entity.entityName} entity={entity} />
+            <EntityCard key={entity.entityId} entity={entity} />
         ))}
     </div>
 );
-
-const formatPlannedLaunchDate = (
-    launchOption: string,
-    launchDate: Date | null,
-): string => {
-    if (launchOption === "today") return "Today";
-    if (!launchDate) return "";
-    return launchDate.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-    });
-};
 
 export const ConfirmationForm = () => {
     const details = useCreateOrgGrpStore((state) => state.details);
@@ -122,8 +173,33 @@ export const ConfirmationForm = () => {
         (state) => state.opportunity.selectedOpportunities,
     );
     const bulkFile = useCreateOrgGrpStore((state) => state.basicInfo.bulkFile);
+    const groupRecords = useCreateOrgGrpStore(
+        (state) => state.basicInfo.groupRecords,
+    );
+    const placements = useCreateOrgGrpStore((state) => state.hierarchy.placements);
     const orgs = useCreateOrgGrpStore((state) => state.orgs);
     const groups = useCreateOrgGrpStore((state) => state.groups);
+    const setGroups = useCreateOrgGrpStore((state) => state.setGroups);
+
+    const parentByEntity = useMemo(
+        () => parentNamesByEntity(placements),
+        [placements],
+    );
+
+    // Groups skip the account linkage step, so they are gathered for review here.
+    useEffect(() => {
+        const next = groupRecords.map((record) =>
+            createGroupEntity(
+                record,
+                parentByEntity.get(record.id) ?? "",
+                opportunityTitleFor(record, selectedOpportunities),
+            ),
+        );
+        const unchanged =
+            next.length === groups.length &&
+            next.every((entity, index) => isSameGroupEntity(entity, groups[index]));
+        if (!unchanged) setGroups(next);
+    }, [groupRecords, parentByEntity, selectedOpportunities, groups, setGroups]);
 
     const priority =
         PRIORITY_LABEL[details.priority] ?? (details.priority || "—");
@@ -135,6 +211,7 @@ export const ConfirmationForm = () => {
     return (
         <div className="confirmation-form">
             <div className="confirm-info-list" role="list">
+                <InfoRow label="Task ID">{details.taskId || "—"}</InfoRow>
                 <InfoRow label="Priority">
                     <span className="confirm-priority">
                         <span className="confirm-priority-dot" />
@@ -145,10 +222,9 @@ export const ConfirmationForm = () => {
                     {typeOfEdit.length > 0 ? typeOfEdit.join("; ") : "—"}
                 </InfoRow>
                 <InfoRow label="Planned launch date">
-                    {formatPlannedLaunchDate(
-                        details.launchOption,
-                        details.launchDate,
-                    ) || "—"}
+                    {details.launchDate
+                        ? formatUTCtoDateOnly(details.launchDate.toISOString())
+                        : "—"}
                 </InfoRow>
                 <InfoRow label="Opportunity">
                     <div className="confirm-opportunity-list">
@@ -161,8 +237,9 @@ export const ConfirmationForm = () => {
                             : "—"}
                     </div>
                 </InfoRow>
-                <InfoRow label="File for bulk create and edit:">
-                    {bulkFile ? (
+                {/* Only the bulk upload path has a file to show. */}
+                {bulkFile && (
+                    <InfoRow label="File for bulk create and edit:">
                         <span className="confirm-file">
                             <span className="confirm-file-name">
                                 {bulkFile.name}
@@ -172,19 +249,24 @@ export const ConfirmationForm = () => {
                             </span>
                             <SuccessIcon />
                         </span>
-                    ) : (
-                        "—"
-                    )}
-                </InfoRow>
+                    </InfoRow>
+                )}
             </div>
 
-            <Tabs defaultActiveKey="orgs" className="confirm-tabs mb-3">
-                <Tab eventKey="orgs" title={`Orgs (${orgs.length})`}>
-                    <EntityList entities={orgs} />
-                </Tab>
-                <Tab eventKey="groups" title={`Groups (${groups.length})`}>
-                    <EntityList entities={groups} />
-                </Tab>
+            <Tabs
+                defaultActiveKey={details.createTypes.includes("organizations") ? "orgs" : "groups"}
+                className="confirm-tabs mb-3"
+            >
+                {details.createTypes.includes("organizations") && (
+                    <Tab eventKey="orgs" title={`Orgs (${orgs.length})`}>
+                        <EntityList entities={orgs} />
+                    </Tab>
+                )}
+                {details.createTypes.includes("groups") && (
+                    <Tab eventKey="groups" title={`Groups (${groups.length})`}>
+                        <EntityList entities={groups} />
+                    </Tab>
+                )}
             </Tabs>
         </div>
     );

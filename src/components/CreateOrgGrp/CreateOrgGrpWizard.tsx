@@ -7,7 +7,7 @@ import { BasicInfoForm } from "./BasicInfoForm";
 import { HierarchyForm } from "./HierarchyForm";
 import { AccountLinkageForm } from "./AccountLinkageForm";
 import { ConfirmationForm } from "./ConfirmationForm";
-import { isManualBasicInfoComplete } from "./types";
+import { isAccountLinked, isManualBasicInfoComplete } from "./types";
 import useCreateOrgGrpStore, {
     emptyCreateOrgGrpBasicInfo,
     emptyCreateOrgGrpHierarchy,
@@ -55,6 +55,13 @@ const CreateOrgGrpWizard: React.FC<CreateOrgGrpWizardProps> = ({ show, onClose }
     const hierarchyPlacements = useCreateOrgGrpStore(
         (state) => state.hierarchy.placements,
     );
+    const organizations = useCreateOrgGrpStore((state) => state.orgs);
+    const accountLinkageIndex = useCreateOrgGrpStore(
+        (state) => state.accountLinkageIndex,
+    );
+    const setAccountLinkageIndex = useCreateOrgGrpStore(
+        (state) => state.setAccountLinkageIndex,
+    );
 
     const steps = ALL_STEPS.filter(
         (step) => step !== "accountLinkage" || createTypes.includes("organizations"),
@@ -64,15 +71,20 @@ const CreateOrgGrpWizard: React.FC<CreateOrgGrpWizardProps> = ({ show, onClose }
     const isLastStep = activeIndex === steps.length - 1;
     const isBasicInfoStep = currentStep === "basicInfo";
     const isHierarchyStep = currentStep === "hierarchy";
+    const isAccountLinkageStep = currentStep === "accountLinkage";
     const basicInfoIncomplete =
         basicInfoMethod === "manual"
             ? !isManualBasicInfoComplete(createTypes, orgRecords, groupRecords)
             : !bulkFile;
+    // The step walks the orgs one at a time, so only the current org gates Continue.
+    const linkageOrganization = organizations[accountLinkageIndex];
     const primaryDisabled =
         (isFirstStep && selectedOpportunities.length === 0) ||
         (isBasicInfoStep && basicInfoIncomplete) ||
         (isHierarchyStep &&
-            hierarchyPlacements.length < orgRecords.length + groupRecords.length);
+            hierarchyPlacements.length < orgRecords.length + groupRecords.length) ||
+        (isAccountLinkageStep &&
+            (!linkageOrganization || !isAccountLinked(linkageOrganization)));
     const renderContent = (step: StepKey) => {
         switch (step) {
             case "opportunity": return <OppurtunityForm />;
@@ -96,6 +108,7 @@ const CreateOrgGrpWizard: React.FC<CreateOrgGrpWizardProps> = ({ show, onClose }
         store.setHierarchy({ ...emptyCreateOrgGrpHierarchy });
         store.setOrgs([]);
         store.setGroups([]);
+        store.setAccountLinkageIndex(0);
         setActiveIndex(0);
     };
 
@@ -106,6 +119,11 @@ const CreateOrgGrpWizard: React.FC<CreateOrgGrpWizardProps> = ({ show, onClose }
             : "Continue";
 
     const handleNext = () => {
+        // Linking the current org unlocks the next one; the step ends on the last.
+        if (isAccountLinkageStep && accountLinkageIndex < organizations.length - 1) {
+            setAccountLinkageIndex(accountLinkageIndex + 1);
+            return;
+        }
         if (isLastStep) {
             handleClose();
             return;

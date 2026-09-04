@@ -2,6 +2,7 @@ import { Button, CheckMarkCircle, CustomCheckbox, FailSafePage, RoundedLabel, Se
 import "./OppurtunityForm.scss";
 import { Opportunities, Opportunity } from "./types";
 import useCreateOrgGrpStore from "@/store/useCreateOrgGrpStore";
+import { formatUTCtoDateOnly } from "@/utils";
 
 const opportunities: Opportunities = [
     {
@@ -73,12 +74,6 @@ const ExternalLinkIcon: React.FC = () => (
     </svg>
 );
 
-const formatDate = (isoDate: string): string => {
-    const date = new Date(isoDate);
-    if (isNaN(date.getTime())) return "";
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-};
-
 // GUID, not the contract number: several opportunities can share one contract.
 const getOpportunityKey = (opp: Opportunity): string => opp.opportunityGUID;
 
@@ -92,8 +87,8 @@ const OpportunityCard: React.FC<{
         { label: "Opportunity GUID", value: opportunity.opportunityGUID },
         { label: "GCRM contract number", value: opportunity.gcrmContractNumber },
         { label: "GCRM contracting account", value: opportunity.gcrmContractingAccount },
-        { label: "Effective start date", value: formatDate(opportunity.effectiveStartDate) },
-        { label: "Effective end date", value: formatDate(opportunity.effectiveEndDate) },
+        { label: "Effective start date", value: formatUTCtoDateOnly(opportunity.effectiveStartDate) },
+        { label: "Effective end date", value: formatUTCtoDateOnly(opportunity.effectiveEndDate) },
         { label: "Type", value: opportunity.type },
     ];
 
@@ -138,10 +133,39 @@ export const OppurtunityForm: React.FC = () => {
 
     const selectedKeys = selectedOpportunities.map(getOpportunityKey);
     const hasSelection = selectedOpportunities.length > 0;
+    const accountSearch = accountQuery.trim();
+    const opportunitySearch = opportunityQuery.trim();
+    const searchingByAccount = accountSearch.length > 0;
+    const searchingByOpportunity = opportunitySearch.length > 0;
+    const canShowResults = searchingByAccount || searchingByOpportunity;
+
+    const handleAccountQueryChange = (value: string) => {
+        setOpportunity({
+            accountQuery: value,
+            ...(value.trim() ? { opportunityQuery: "" } : {}),
+        });
+    };
+
+    const handleOpportunityQueryChange = (value: string) => {
+        setOpportunity({
+            opportunityQuery: value,
+            ...(value.trim() ? { accountQuery: "" } : {}),
+        });
+    };
 
     const handleShowResults = () => {
+        const query = (searchingByAccount ? accountSearch : opportunitySearch).toLowerCase();
+        const matches = opportunities.filter((opp) => {
+            if (searchingByAccount) {
+                return opp.gcrmContractingAccount.toLowerCase().includes(query);
+            }
+            return (
+                opp.title.toLowerCase().includes(query) ||
+                opp.opportunityGUID.toLowerCase().includes(query)
+            );
+        });
         setOpportunity({
-            results: opportunities,
+            results: matches,
             selectedOpportunities: [],
         });
     };
@@ -167,19 +191,29 @@ export const OppurtunityForm: React.FC = () => {
             <div className="opp-form-search-comp d-flex flex-row align-items-center justify-content-between">
                 <SearchBar
                     overlayRequired={false}
+                    closeIcon
                     placeholder="Enter account name or ID"
-                    onChange={(e) => setOpportunity({ accountQuery: e.target.value })}
+                    onChange={(e) => handleAccountQueryChange(e.target.value)}
                     value={accountQuery}
                     type="md"
+                    disabled={searchingByOpportunity}
                 />
                 <SearchBar
                     overlayRequired={false}
+                    closeIcon
                     placeholder="Enter opportunity name and GUID"
-                    onChange={(e) => setOpportunity({ opportunityQuery: e.target.value })}
+                    onChange={(e) => handleOpportunityQueryChange(e.target.value)}
                     value={opportunityQuery}
                     type="md"
+                    disabled={searchingByAccount}
                 />
-                <Button variant="primary" onClick={handleShowResults}>Show results</Button>
+                <Button
+                    variant="primary"
+                    onClick={handleShowResults}
+                    disabled={!canShowResults}
+                >
+                    Show results
+                </Button>
             </div>
 
             <div className="opp-form-results">

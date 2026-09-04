@@ -18,6 +18,7 @@
     p {
       margin: 0;
       color: $primary-black;
+      font-size: $font-size-small;
     }
   }
 
@@ -54,7 +55,7 @@
   .hierarchy-source {
     min-width: 0;
     padding: 10px 10px 0;
-    background: $grey-94;
+    background: $table-header-color;
     
 
     // While a drag is in flight the picked rows travel with the cursor, so the
@@ -106,6 +107,7 @@
         border-bottom-color: $link-color;
         color: $primary-black;
         font-weight: $font-weight-semi-bold;
+        border-radius: 0;
       }
     }
   }
@@ -123,6 +125,7 @@
       gap: 8px;
       .form-check {
         padding-left: 0;
+        margin-top: 4px;
       }
     }
 
@@ -261,12 +264,12 @@
     strong {
       color: $primary-black;
       font-size: $font-size-xs;
-      font-weight: $font-weight-regular;
+      font-weight: $font-weight-semi-bold;
     }
 
     small {
       color: $neutral-foreground;
-      font-size: $font-size-xxs;
+      font-size: $font-base-size;
     }
   }
 
@@ -338,7 +341,7 @@
     background: transparent;
     text-align: left;
     color: $primary-black;
-    font-size: $font-size-xs;
+    font-size: $font-size-small;
     font-weight: $font-weight-regular;
     cursor: pointer;
 
@@ -389,14 +392,14 @@
 
     h3 {
       margin: 0 0 8px;
-      color: $primary-black;
-      font-size: $font-size-2rem;
+      color: $btn-back-color;
+      font-size: $font-size-l;
       font-weight: $font-weight-semi-bold;
     }
 
     p {
       margin: 0;
-      color: $neutral-stroke;
+      color: $btn-back-color;
       font-size: $font-size-small;
     }
   }
@@ -437,7 +440,7 @@
       min-height: 34px;
       margin-bottom: 4px;
       background: $table-header-color;
-      border-color: $table-bordercolor;
+      border-color: transparent;
       cursor: grab;
 
       &:active {

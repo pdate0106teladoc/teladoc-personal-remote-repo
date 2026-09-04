@@ -898,6 +898,7 @@ export const TOOLTIP_MESSAGES = {
   createOrgGrp: {
     PLANNED_LAUNCH_DATE_TOOLTIP: "For changes that should take effect now, select today's date. To schedule changes, select the date they should take effect.",
     SCHEDULE_FOR_LATER_TOOLTIP: "Select a future date to schedule when this item will be sent to production.",
+    CCM_PRODUCTS_TOOLTIP: "Select Yes when the org sells CCM products.",
   },
 };
 

@@ -39,6 +39,7 @@ export const HierarchyForm: React.FC = () => {
     const groupRecords = useCreateOrgGrpStore(
         (state) => state.basicInfo.groupRecords,
     );
+    const createTypes = useCreateOrgGrpStore((state) => state.details.createTypes);
     const parentQuery = useCreateOrgGrpStore(
         (state) => state.hierarchy.parentQuery,
     );
@@ -49,8 +50,12 @@ export const HierarchyForm: React.FC = () => {
         (state) => state.hierarchy.placements,
     );
     const setHierarchy = useCreateOrgGrpStore((state) => state.setHierarchy);
+    const showOrgs = createTypes.includes("organizations");
+    const showGroups = createTypes.includes("groups");
 
-    const [activeTab, setActiveTab] = useState<HierarchyEntityType>("org");
+    const [activeTab, setActiveTab] = useState<HierarchyEntityType>(
+        showOrgs ? "org" : "group",
+    );
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [draggingIds, setDraggingIds] = useState<string[]>([]);
     const [dragOverParentId, setDragOverParentId] = useState<string | null>(null);
@@ -134,6 +139,11 @@ export const HierarchyForm: React.FC = () => {
         setActiveTab(tab);
         setSelectedIds([]);
     };
+
+    useEffect(() => {
+        if (activeTab === "org" && !showOrgs && showGroups) setTab("group");
+        if (activeTab === "group" && !showGroups && showOrgs) setTab("org");
+    }, [activeTab, showOrgs, showGroups]);
 
     const toggleCandidate = (id: string, checked: boolean) => {
         setSelectedIds((current) =>
@@ -396,9 +406,19 @@ export const HierarchyForm: React.FC = () => {
                 <p>Search for the parent organization, then drag and drop into place</p>
                 <div className="hierarchy-progress">
                     <span>
-                        {placedOrgCount} / {orgs.length} orgs
-                        <span aria-hidden="true"> · </span>
-                        {placedGroupCount} / {groups.length} groups
+                        {showOrgs && (
+                            <>
+                                {placedOrgCount} / {orgs.length} orgs
+                            </>
+                        )}
+                        {showOrgs && showGroups && (
+                            <span aria-hidden="true"> · </span>
+                        )}
+                        {showGroups && (
+                            <>
+                                {placedGroupCount} / {groups.length} groups
+                            </>
+                        )}
                     </span>
                     <Button
                         variant="secondary"
@@ -421,20 +441,24 @@ export const HierarchyForm: React.FC = () => {
                     }`}
                 >
                     <div className="hierarchy-tabs">
-                        <Button
-                            variant="secondary"
-                            className={activeTab === "org" ? "active" : ""}
-                            onClick={() => setTab("org")}
-                        >
-                            Orgs ({orgs.length})
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            className={activeTab === "group" ? "active" : ""}
-                            onClick={() => setTab("group")}
-                        >
-                            Groups ({groups.length})
-                        </Button>
+                        {showOrgs && (
+                            <Button
+                                variant="secondary"
+                                className={activeTab === "org" ? "active" : ""}
+                                onClick={() => setTab("org")}
+                            >
+                                Orgs ({orgs.length})
+                            </Button>
+                        )}
+                        {showGroups && (
+                            <Button
+                                variant="secondary"
+                                className={activeTab === "group" ? "active" : ""}
+                                onClick={() => setTab("group")}
+                            >
+                                Groups ({groups.length})
+                            </Button>
+                        )}
                     </div>
 
                     {selectableCandidates.length > 0 && (
