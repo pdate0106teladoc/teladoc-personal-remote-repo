@@ -13,9 +13,11 @@ import { Offcanvas } from "react-bootstrap";
 import { isValidURL } from "@/utils";
 import useCreateOrgGrpStore from "@/store/useCreateOrgGrpStore";
 import FileUpload from "../FileUpload/FileUpload";
+import { createTaskId } from "./types";
 import "./InitialOrgGrpDetailForm.scss";
 
 interface InitialOrgGrpDetailFormPayload {
+  taskId: string;
   priority: string;
   launchOption: "today" | "later" | "";
   launchDate: Date | null;
@@ -30,6 +32,22 @@ interface InitialOrgGrpDetailFormProps {
   show: boolean;
   onCancel: () => void;
   onContinue?: (payload: InitialOrgGrpDetailFormPayload) => void;
+}
+
+// Same helper the task create / prod schedule forms use for "Today".
+function buildTodayUtcDate(): Date {
+  const now = new Date();
+  return new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      now.getUTCHours(),
+      now.getUTCMinutes(),
+      now.getUTCSeconds(),
+      now.getUTCMilliseconds(),
+    ),
+  );
 }
 
 const InitialOrgGrpDetailForm: React.FC<InitialOrgGrpDetailFormProps> = ({
@@ -82,6 +100,8 @@ const InitialOrgGrpDetailForm: React.FC<InitialOrgGrpDetailFormProps> = ({
     if (workfrontInvalid || playbookInvalid) return;
 
     const payload = {
+      // The task is created on Start, so the id is fixed for the rest of the flow.
+      taskId: createTaskId(),
       priority: dropdownPriority,
       launchOption,
       launchDate: dateValue,
@@ -124,9 +144,12 @@ const InitialOrgGrpDetailForm: React.FC<InitialOrgGrpDetailFormProps> = ({
         </Offcanvas.Title>
         <Button
           variant="secondary"
-          onClick={onCancel}
           className="initial-close-button"
           aria-label="Close"
+          onClick={() => {
+            onCancel();
+            removeSelection();
+          }}
         >
           <CloseIcon width={24} height={24} />
         </Button>
@@ -153,9 +176,13 @@ const InitialOrgGrpDetailForm: React.FC<InitialOrgGrpDetailFormProps> = ({
             <CustomRadioToggle
               name="launch-option"
               value={launchOption}
-              onChange={(value) =>
-                setLaunchOption(value as "today" | "later" | "")
-              }
+              onChange={(value) => {
+                const option = value as "today" | "later" | "";
+                setLaunchOption(option);
+                // "Today" launches immediately, so the date is today's; "later"
+                // waits for the user to pick one.
+                setDateValue(option === "today" ? buildTodayUtcDate() : null);
+              }}
               options={[
                 {
                   label: (

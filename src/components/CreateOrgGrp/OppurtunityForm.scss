@@ -8,6 +8,11 @@
 
         .search-bar-wrapper {
             height: 24px;
+
+            &:has(input:disabled) {
+                opacity: 0.5;
+                pointer-events: none;
+            }
         }
 
         .custom-button {
@@ -66,7 +71,7 @@
             align-items: center;
             gap: 6px;
             font-weight: $font-weight-semi-bold;
-            font-size: $font-size-small;
+            font-size: $font-size-reg;
             color: $primary-black;
 
             .opp-card-link {
@@ -101,8 +106,8 @@
 
             .opp-card-detail-value {
                 font-weight: $font-weight-regular;
-                font-size: $font-size-small;
-                color: $primary-black;
+                font-size: 12px;
+                color: #424242;
                 line-height: 1.4;
                 word-break: break-word;
             }
@@ -127,7 +132,7 @@
             border-top: 1px solid $grey-94;
             padding: 2rem;
             background-color: $color-white;
-            background: #f4f4f6;
+            background: #f0f0f0;
             border-radius: 8px;
 
             .opp-footer-header {
@@ -139,7 +144,7 @@
                 .opp-footer-title {
                     font-weight: 600;
                     font-size: 14px;
-                    color: #1a1a24;
+                    color: #242424;
                 }
 
                 .opp-footer-icon-empty {
@@ -181,8 +186,9 @@
                     border: 1px solid rgba($link-color, 0.16);
                     border-radius: 4px;
                     padding: 4px 12px;
-                    font-size: 13px;
-                    color: $link-color;
+                    font-size: 12px;
+                    font-weight: 400;
+                    color: #684CF6;
 
                     .opp-footer-chip-remove {
                         display: inline-flex;
@@ -204,5 +210,9 @@
             }
         }
     }
-
 }
+.coming-soon {
+    .title, .description {
+        color: #424242;
+    } 
+} 

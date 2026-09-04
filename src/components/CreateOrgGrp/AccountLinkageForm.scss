@@ -1,0 +1,519 @@
+.account-linkage-empty {
+  margin: 24px 0;
+  color: $neutral-foreground;
+  font-size: $font-size-xs;
+}
+
+.account-linkage-form {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 24px;
+  min-height: calc(100vh - 230px);
+  font-size: $font-size-xs;
+
+  .required {
+    color: $error-text-color;
+  }
+
+  .linkage-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: $neutral-stroke;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semi-bold;
+  }
+
+  .account-linkage-nav {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin: 0;
+    padding: 0 8px 0 0;
+    list-style: none;
+  }
+
+  .account-linkage-nav-item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+
+    // Faint connector between the orgs, as in the design.
+    &:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 6px;
+      width: 1px;
+      height: 12px;
+      background: $table-bordercolor;
+    }
+
+    &.active .account-linkage-nav-name {
+      font-weight: $font-weight-semi-bold;
+    }
+
+    // Orgs are linked in order, so anything past the current one reads as locked.
+    &.pending {
+      opacity: 0.55;
+    }
+  }
+
+  .account-linkage-nav-done {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 3px;
+    color: #13A10E;
+  }
+
+  .account-linkage-nav-dot {
+    flex-shrink: 0;
+    width: 13px;
+    height: 13px;
+    margin-top: 3px;
+    border: 1px solid $neutral-strole-1;
+    border-radius: 50%;
+    background: $color-white;
+  }
+
+  .account-linkage-nav-item.active .account-linkage-nav-dot {
+    border: 2px solid $link-color;
+    box-shadow: inset 0 0 0 2px $color-white;
+    background: $link-color;
+  }
+
+  .account-linkage-nav-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .account-linkage-nav-name {
+    color: $primary-black;
+    font-weight: $font-weight-regular;
+    font-size: $font-size-small;
+  }
+
+  .account-linkage-nav-tag {
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: $expand-btn-border;
+    color: $neutral-foreground;
+    font-size: 10px;
+  }
+
+  .account-linkage-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  .linkage-ccm-products {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .linkage-info-icon {
+      display: inline-flex;
+      align-items: center;
+      color: $neutral-stroke;
+      cursor: pointer;
+    }
+
+    .custom-radio-group {
+      margin-bottom: 0;
+    }
+
+    .custom-radio-group .radio-options {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+  }
+
+  .linkage-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  // Section caption sits on the divider line, like a fieldset legend.
+  .linkage-section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    color: $btn-back-color;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-regular;
+
+    &::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: $table-bordercolor;
+    }
+  }
+
+  .linkage-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .linkage-search-field {
+    position: relative;
+
+    .search-bar-wrapper,
+    .search-input-container,
+    .linkage-search {
+      width: 100%;
+    }
+
+    .search-input-container.md {
+      height: 32px;
+    }
+  }
+
+  .linkage-suggestions {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    background: $color-white;
+    border: 1px solid $neutral-strole-1;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px $border-shadow-color;
+  }
+
+  .linkage-suggestion-empty {
+    margin: 0;
+    padding: 10px 12px;
+    color: $neutral-foreground;
+  }
+
+  // Result count banner above the list.
+  .linkage-suggestions-summary {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 8px;
+    padding: 8px 10px;
+    border: 1px solid $validate-success-border;
+    border-radius: 4px;
+    background: $validate-success-bg;
+
+    .linkage-suggestions-summary-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      color: $success-text-color;
+    }
+
+    .linkage-suggestions-count,
+    .linkage-suggestions-hint {
+      display: block;
+      color: $primary-black;
+    }
+
+    .linkage-suggestions-count {
+      font-weight: $font-weight-semi-bold;
+    }
+  }
+
+  .linkage-suggestions-head {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 8px 12px;
+    border-top: 1px solid $table-bordercolor;
+    border-bottom: 1px solid $table-bordercolor;
+    background: $table-header-color;
+    color: $neutral-stroke;
+    font-weight: $font-weight-semi-bold;
+  }
+
+  .linkage-suggestion-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li:not(:last-child) .linkage-suggestion {
+      border-bottom: 1px solid $table-bordercolor;
+    }
+  }
+
+  .linkage-suggestion {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    text-align: left;
+    color: $primary-black;
+    font-size: $font-size-xs;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background: $neutral-background-hover;
+    }
+
+    .linkage-suggestion-main,
+    .linkage-suggestion-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .linkage-suggestion-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+
+      strong {
+        font-weight: $font-weight-semi-bold;
+      }
+    }
+
+    .linkage-suggestion-verified {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1px 8px;
+      border: 1px solid $validate-success-border;
+      border-radius: 999px;
+      background: $validate-success-bg;
+      color: $success-text-color;
+      font-size: 10px;
+      font-weight: $font-weight-medium;
+      white-space: nowrap;
+
+      .linkage-verified-icon {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+      }
+    }
+
+    .linkage-suggestion-unverified {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 8px;
+      border-radius: 999px;
+      background: $neutral-stroke;
+      color: $color-white;
+      font-size: 10px;
+      font-weight: $font-weight-medium;
+      white-space: nowrap;
+    }
+
+    .linkage-suggestion-guid {
+      color: $neutral-stroke;
+      word-break: break-all;
+    }
+
+    .linkage-suggestion-created {
+      font-weight: $font-weight-semi-bold;
+    }
+
+    .linkage-suggestion-revenue {
+      color: $neutral-foreground;
+
+      .linkage-suggestion-revenue-date {
+        color: $success-toast-color;
+        font-weight: $font-weight-semi-bold;
+      }
+    }
+  }
+
+  .linkage-selected-account {
+    padding: 12px;
+    border-radius: 4px;
+    background: $table-header-color;
+
+    .linkage-selected-label {
+      margin-bottom: 10px;
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semi-bold;
+      color: $primary-black;
+    }
+  }
+
+  .linkage-account-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    td {
+      padding: 5px 0;
+      vertical-align: top;
+    }
+
+    .linkage-account-key {
+      width: 32%;
+      padding-right: 12px;
+      color: $neutral-stroke;
+      font-size: $font-base-size;
+      font-weight: $font-weight-semi-bold;
+    }
+
+    .linkage-account-value {
+      display: flex;
+      align-items: center;
+      color: $btn-back-color;
+      font-size: $font-base-size;
+      
+    }
+
+    .linkage-guid {
+      word-break: break-all;
+    }
+
+    .linkage-verified-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      margin-left: 8px;
+      padding: 1px 4px;
+      border: 1px solid $validate-success-border;
+      border-radius: 12px;
+      background: $validate-success-bg;
+      color: $success-text-color;
+      font-size: 10px;
+      font-weight: $font-weight-medium;
+
+      .linkage-verified-icon {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+      }
+    }
+
+    .linkage-not-verified-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 8px;
+      padding: 1px 8px;
+      border-radius: 999px;
+      background: $neutral-stroke;
+      color: $color-white;
+      font-size: 10px;
+      font-weight: $font-weight-medium;
+    }
+
+    .linkage-manager {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .linkage-manager-avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: $link-color;
+      color: $color-white;
+      font-size: 8px;
+      font-weight: $font-weight-semi-bold;
+    }
+
+    .linkage-opportunity-link {
+      color: $link-color;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      .linkage-opportunity-link-icon {
+        flex-shrink: 0;
+        margin-left: 5px;
+      }
+    }
+
+    .linkage-revenue-date {
+      color: $success-toast-color;
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  .linkage-radio-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: $color-white;
+    cursor: pointer;
+
+    &.selected {
+      border-color: $link-color;
+    }
+
+    &.disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
+
+    .linkage-radio-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .linkage-radio-input {
+      flex-shrink: 0;
+      accent-color: $link-color;
+    }
+
+    .linkage-radio-title {
+      color: $primary-black;
+      font-weight: $font-weight-semi-bold;
+    }
+
+    .linkage-radio-description {
+      margin: 0 0 0 24px;
+      color: $neutral-foreground;
+    }
+  }
+
+  .linkage-apply-all {
+    align-self: flex-start;
+    min-width: 0;
+    width: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: $link-color;
+    font-size: $font-size-xs;
+  }
+}
+
+@media (max-width: 900px) {
+  .account-linkage-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

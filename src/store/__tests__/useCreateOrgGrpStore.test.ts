@@ -21,8 +21,10 @@ const opportunity: Opportunity = {
 };
 
 const entity: CreateOrgGrpEntity = {
+  entityId: "manual-1",
   entityName: "BCBS City of Charlotte",
   parentOrganization: "Blue Cross Blue Shield of NC",
+  hasCcmProducts: true,
   opportunity: "Expansion 2026",
   isBilling: false,
   lcrmTelemedAccount: {
@@ -30,12 +32,16 @@ const entity: CreateOrgGrpEntity = {
     isNewAccount: true,
     accountName: "BCBS City of Charlotte",
     lcrmRelationship: "direct",
+    searchQuery: "BCBS City of Charlotte",
+    selectedAccount: null,
   },
   lcrmCcmAccount: {
     id: "ccm-1",
     isNewAccount: true,
     accountName: "BCBS City of Charlotte",
     lcrmRelationship: "direct",
+    searchQuery: "BCBS City of Charlotte",
+    selectedAccount: null,
   },
 };
 
@@ -93,6 +99,14 @@ describe("useCreateOrgGrpStore", () => {
     getState().setGroups([]);
     expect(getState().orgs).toEqual([entity]);
     expect(getState().groups).toEqual([]);
+  });
+
+  it("stores CCM product selection per org, defaulting to yes", () => {
+    getState().setOrgs([entity]);
+    expect(getState().orgs[0].hasCcmProducts).toBe(true);
+
+    getState().setOrgs([{ ...entity, hasCcmProducts: false }]);
+    expect(getState().orgs[0].hasCcmProducts).toBe(false);
   });
 
   it("stores hierarchy placements", () => {

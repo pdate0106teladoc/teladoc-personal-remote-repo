@@ -14,16 +14,20 @@ export type CreateOrgGrpState = {
   hierarchy: CreateOrgGrpHierarchy;
   orgs: CreateOrgGrpEntity[];
   groups: CreateOrgGrpEntity[];
+  // Account linkage is completed one org at a time.
+  accountLinkageIndex: number;
   setDetails: (details: Partial<CreateOrgGrpDetails>) => void;
   setOpportunity: (opportunity: Partial<CreateOrgGrpOpportunityStep>) => void;
   setBasicInfo: (basicInfo: Partial<CreateOrgGrpBasicInfo>) => void;
   setHierarchy: (hierarchy: Partial<CreateOrgGrpHierarchy>) => void;
   setOrgs: (orgs: CreateOrgGrpEntity[]) => void;
   setGroups: (groups: CreateOrgGrpEntity[]) => void;
+  setAccountLinkageIndex: (index: number) => void;
   reset: () => void;
 };
 
 export const emptyCreateOrgGrpDetails: CreateOrgGrpDetails = {
+  taskId: "",
   priority: "",
   launchOption: "",
   launchDate: null,
@@ -60,6 +64,7 @@ const initialState = {
   hierarchy: { ...emptyCreateOrgGrpHierarchy },
   orgs: [] as CreateOrgGrpEntity[],
   groups: [] as CreateOrgGrpEntity[],
+  accountLinkageIndex: 0,
 };
 
 const useCreateOrgGrpStore = create<CreateOrgGrpState>((set) => ({
@@ -87,6 +92,7 @@ const useCreateOrgGrpStore = create<CreateOrgGrpState>((set) => ({
 
   setOrgs: (orgs) => set({ orgs }),
   setGroups: (groups) => set({ groups }),
+  setAccountLinkageIndex: (accountLinkageIndex) => set({ accountLinkageIndex }),
 
   reset: () =>
     set({
@@ -96,6 +102,7 @@ const useCreateOrgGrpStore = create<CreateOrgGrpState>((set) => ({
       hierarchy: { ...emptyCreateOrgGrpHierarchy },
       orgs: [],
       groups: [],
+      accountLinkageIndex: 0,
     }),
 }));
 

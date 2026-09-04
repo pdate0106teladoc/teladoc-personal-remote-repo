@@ -7,7 +7,7 @@ import {
     DatePicker,
 } from "@ucc/common-ui";
 import { useEffect, useRef, useState } from "react";
-import { BsChevronDown } from "react-icons/bs";
+import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 import { DustbinIcon } from "@/assets";
 import useCreateOrgGrpStore from "@/store/useCreateOrgGrpStore";
 import { ManualEntityRecord } from "./types";
@@ -238,15 +238,41 @@ export const BasicInfoManualForm: React.FC = () => {
                     How many {entityLabel}s are you creating?
                     <span className="required">*</span>
                 </label>
-                <CustomInput
-                    id="manual-count"
-                    type="number"
-                    min={MIN_RECORDS}
-                    max={MAX_RECORDS}
-                    className="manual-count-input"
-                    value={records.length}
-                    onChange={(e) => handleCountChange(e.target.value)}
-                />
+                <div className="manual-count-field">
+                    <CustomInput
+                        id="manual-count"
+                        type="number"
+                        min={MIN_RECORDS}
+                        max={MAX_RECORDS}
+                        className="manual-count-input"
+                        value={records.length}
+                        onChange={(e) => handleCountChange(e.target.value)}
+                    />
+                    <span className="manual-count-stepper">
+                        <Button
+                            variant="secondary"
+                            className="manual-count-step"
+                            aria-label={`Add one ${entityLabel}`}
+                            disabled={records.length >= MAX_RECORDS}
+                            onClick={() =>
+                                handleCountChange(String(records.length + 1))
+                            }
+                        >
+                            <BsChevronUp />
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            className="manual-count-step"
+                            aria-label={`Remove one ${entityLabel}`}
+                            disabled={records.length <= MIN_RECORDS}
+                            onClick={() =>
+                                handleCountChange(String(records.length - 1))
+                            }
+                        >
+                            <BsChevronDown />
+                        </Button>
+                    </span>
+                </div>
                 <span className="manual-opp-counter">
                     {usedOpportunities.size}/{selectedOpportunities.length} opportunities
                     selected
@@ -341,7 +367,8 @@ export const BasicInfoManualForm: React.FC = () => {
                             </div>
                         </div>
 
-                        {index > 0 && (
+                        {/* Nothing to delete while a single card is the minimum. */}
+                        {records.length > 1 && (
                             <Button
                                 variant="secondary"
                                 className="manual-record-remove"

@@ -33,6 +33,7 @@ $manual-control-height: 30px;
                 color: $primary-black;
                 font-weight: $font-weight-semi-bold;
                 border-bottom-color: $link-color;
+                border-radius: 0;
             }
         }
     }
@@ -43,20 +44,26 @@ $manual-control-height: 30px;
         gap: 10px;
 
         .manual-count-label {
-            font-size: $font-size-xs;
+            font-size: $font-size-small;
             font-weight: $font-weight-regular;
             color: $primary-black;
             margin-bottom: 0;
         }
 
+        // The stepper chevrons sit inside the field, so the wrapper anchors them.
+        .manual-count-field {
+            position: relative;
+            width: 110px;
+        }
+
         .manual-count-input {
-            width: 85px;
+            width: 100%;
             margin-bottom: 0;
 
             .custom-input-field {
-                width: 85px;
+                width: 100%;
                 height: $manual-control-height;
-                padding: 0 8px;
+                padding: 0 26px 0 8px;
                 border: 1px solid $neutral-strole-1;
                 border-radius: 4px;
                 background: $color-white;
@@ -70,11 +77,55 @@ $manual-control-height: 30px;
             }
         }
 
+        .manual-count-stepper {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            bottom: 1px;
+            display: flex;
+            flex-direction: column;
+            width: 22px;
+
+            .manual-count-step {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex: 1 1 50%;
+                min-width: 0;
+                min-height: 0;
+                width: 100%;
+                height: 50%;
+                padding: 0;
+                border: none;
+                background: transparent;
+                color: $neutral-foreground;
+                // The shared Button ships a 20px line-height, which is taller
+                // than half the field and would clip the lower chevron.
+                font-size: 0;
+                line-height: 1;
+
+                svg {
+                    width: 9px;
+                    height: 9px;
+                    flex-shrink: 0;
+                }
+
+                &:hover:not(:disabled) {
+                    background: transparent;
+                    color: $primary-black;
+                }
+
+                &:disabled {
+                    opacity: 0.4;
+                }
+            }
+        }
+
         .manual-opp-counter {
             margin-left: auto;
             font-size: $font-size-xs;
             font-weight: $font-weight-semi-bold;
-            color: $primary-black;
+            color: $btn-back-color;
         }
     }
 
@@ -108,8 +159,8 @@ $manual-control-height: 30px;
             .manual-field-label {
                 flex: 0 0 $manual-label-col;
                 font-size: $font-size-xs;
-                font-weight: $font-weight-regular;
-                color: $primary-black;
+                font-weight: $font-weight-semi-bold;
+                color: $neutral-stroke;
             }
 
             .manual-field-control {
@@ -153,6 +204,7 @@ $manual-control-height: 30px;
                 display: flex;
                 align-items: center;
                 gap: 16px;
+                height: $manual-control-height;
             }
 
             .manual-apply-all {
@@ -166,6 +218,7 @@ $manual-control-height: 30px;
                 background: transparent;
                 line-height: $manual-control-height;
                 font-size: $font-size-xs;
+                font-weight: $font-weight-regular;
                 color: $link-color;
                 cursor: pointer;
                 white-space: nowrap;
@@ -179,7 +232,7 @@ $manual-control-height: 30px;
                 width: 175px;
                 display: flex;
                 align-items: center;
-                height: $manual-control-height;
+                margin-top: -7px;
 
                 // DatePicker wraps extra markup (label, error). Collapse that so
                 // "Apply to all" lines up with the input, not the outer wrapper.
